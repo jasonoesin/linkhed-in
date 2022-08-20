@@ -1,0 +1,17 @@
+@mixin rounded{
+    border-radius: 1rem;
+}
+
+@mixin flex-row{
+    display: flex;
+    flex-direction: row;
+}
+
+@mixin flex-col{
+    display: flex;
+    flex-direction: column;
+}
+
+@mixin gray-text{
+    color: lightslategray;
+}

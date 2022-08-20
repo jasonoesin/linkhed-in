@@ -1,40 +1,22 @@
 package db
 
 import (
-	"fmt"
 	"log"
 
-	"example.com/linkhedin/pkg/models"
-	"github.com/jinzhu/gorm"
+	"github.com/jasonoesin/linkhed-in/pkg/models"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func GetDatabase() *gorm.DB {
-	databasename := "postgres"
-	database := "postgres"
-	databasepassword := "admin"
-	databaseurl := "postgres://postgres:" + databasepassword + "@localhost/" + databasename + "?sslmode=disable"
+func Init() *gorm.DB {
+	dbURL := "postgres://postgres:admin@localHost:5432/postgres"
+	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
-	connection, err := gorm.Open(database, databaseurl)
 	if err != nil {
-		log.Fatalln("Invalid database url")
+		log.Fatalln(err)
 	}
-	sqldb := connection.DB()
 
-	err = sqldb.Ping()
-	if err != nil {
-		log.Fatal("Database connected")
-	}
-	fmt.Println("Database connection successful.")
-	return connection
-}
+	db.AutoMigrate(&models.User{}, &models.Post{}, &models.ConnectRequest{})
 
-func InitialMigration() {
-	connection := GetDatabase()
-	defer CloseDatabase(connection)
-	connection.AutoMigrate(models.User{})
-}
-
-func CloseDatabase(connection *gorm.DB) {
-	sqldb := connection.DB()
-	sqldb.Close()
+	return db
 }

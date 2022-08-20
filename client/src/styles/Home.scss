@@ -1,0 +1,25 @@
+.home{
+    background-color: #f3f2ef;
+    height: fit-content;
+    min-height: 100vh;
+    padding: 5rem 10rem;
+
+    display: flex;
+    flex-direction: column;
+
+    .create-post{
+        display: flex;
+        justify-content: center;
+    }
+
+    .home-container{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+
+        >  * + * {
+            margin-top: 1rem;
+        }
+    }
+}

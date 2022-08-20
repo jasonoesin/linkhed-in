@@ -1,0 +1,46 @@
+@use "mixin" as m;
+
+.connect{
+    @include m.flex-row;
+    
+    align-items: center;
+
+    > * + * {
+        padding: 1rem;
+    }
+
+    
+    .connect-pic{
+        
+        img{
+            width: 3rem;
+            border-radius: 100%;
+        }
+    }
+
+    .connect-desc{
+        width: 50%;
+    }
+
+    .connect-button{
+        @include m.flex-row;
+
+
+        *{
+            margin-left: 0.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .ignore{
+            @include m.gray-text;
+        }
+
+
+        .accept{
+            color: slateblue;
+            font-weight: 700;
+        }
+    }
+}
+

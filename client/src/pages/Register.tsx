@@ -1,4 +1,3 @@
-import "../styles/login.scss";
 import React from "react";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
