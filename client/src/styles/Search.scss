@@ -1,0 +1,59 @@
+@use './mixin' as m;
+
+.con-request{
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    padding-left: 0rem;
+    padding-top: 0.5rem;
+    padding-bottom:0.5rem;
+
+    .name{
+        flex-grow: 2;
+        padding: 2rem;
+    }
+
+
+    img{
+        width: 4rem;
+        border-radius: 100%;
+    }
+
+    button{
+        all:unset;
+        color: slateblue;
+        cursor: pointer;
+        font-weight:600;
+        padding: 1rem;
+    }
+
+    .connected{
+        color: lightslategray;
+        border: 1px solid gray;
+        border-radius: 50rem;
+    }
+}
+
+.search-page{
+    background-color: #f3f2ef;
+    height: fit-content;
+    min-height: 100vh;
+    padding: 5rem 10rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .search-page-white-box{
+        @include m.rounded;
+
+        width: 30rem;
+        display: flex;
+        background-color: white;
+        min-height: 20rem;
+        height: fit-content;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+}

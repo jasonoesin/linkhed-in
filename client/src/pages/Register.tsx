@@ -1,8 +1,11 @@
 import React from "react";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const nav = useNavigate();
+
   return (
     <div>
       <div className="header">
@@ -34,21 +37,9 @@ const Register = () => {
               password: (e.target as HTMLFormElement).password.value,
             };
 
-            axios.post(`http://localhost:8080/signup`, user).then((res) => {
-              console.log(res);
-              console.log(res.data);
-
-              if (!res.data.isError) {
-                emailjs.send(
-                  "service_90laa1g",
-                  "template_agu3gtn",
-                  {
-                    to_name: res.data.email,
-                    message: "123456",
-                    target: res.data.email,
-                  },
-                  "h1-t2WJP8Fb0Ea6jg"
-                );
+            axios.post(`http://localhost:8080/register`, user).then((res) => {
+              if (res.data?.id !== 0) {
+                nav("/");
               }
             });
           }}

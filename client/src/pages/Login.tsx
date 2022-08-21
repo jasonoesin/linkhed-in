@@ -1,7 +1,9 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../styles/login.scss";
 
 const Login = () => {
+  const nav = useNavigate();
   return (
     <div>
       <div className="header">
@@ -33,12 +35,13 @@ const Login = () => {
               password: (e.target as HTMLFormElement).password.value,
             };
 
-            axios.post(`http://localhost:8080/signin`, user).then((res) => {
+            axios.post(`http://localhost:8080/login`, user).then((res) => {
               console.log(res);
               console.log(res.data);
 
               if (res.data?.token) {
                 localStorage.setItem("data", JSON.stringify(res.data));
+                nav("/home");
               }
             });
           }}

@@ -1,8 +1,64 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import "../styles/Navbar.scss";
 import ImageNav from "./ImageNav";
 import { useNavigate } from "react-router-dom";
+import {
+  BellIcon,
+  BriefcaseIcon,
+  ChatIcon,
+  GlobeIcon,
+  HomeIcon,
+} from "@heroicons/react/solid";
+
+const Profile = () => {
+  const [pop, setPop] = useState(false);
+  const nav = useNavigate();
+
+  let curr = useRef();
+
+  useEffect(() => {
+    let handler = (e: any) => {
+      console.log(e.target);
+      if (curr.current == null) return;
+      if ((!curr.current as any).contains(e.target)) setPop(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  });
+
+  return (
+    <>
+      <div
+        onClick={() => {
+          setPop((pop) => !pop);
+        }}
+      >
+        <ImageNav text={"Me🡇"}>
+          <img src="https://picsum.photos/300/300" className="icon" />
+        </ImageNav>
+      </div>
+
+      {pop && (
+        <div ref={curr.current} className="profile-bar">
+          <div className="Name">Jason</div>
+          <div className="profile">My Profile</div>
+          <div
+            onClick={() => {
+              localStorage.removeItem("data");
+              nav("/");
+            }}
+            className="sign-out"
+          >
+            Sign Out
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 export default function Navbar() {
   const nav = useNavigate();
@@ -26,6 +82,7 @@ export default function Navbar() {
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.target as any).value !== "") {
               nav("/search/" + (e.target as HTMLInputElement).value);
+              location.reload();
             }
           }}
           type="text"
@@ -33,11 +90,22 @@ export default function Navbar() {
       </div>
 
       <div className="right">
-        <ImageNav text={"Home"} />
-        <ImageNav text={"My Network"} />
-        <ImageNav text={"Jobs"} />
-        <ImageNav text={"Messaging"} />
-        <ImageNav text={"Notification"} />
+        <ImageNav link={"/home"} text={"Home"}>
+          <HomeIcon className="icon" />
+        </ImageNav>
+        <ImageNav link={"/network"} text={"My Network"}>
+          <GlobeIcon className="icon" />
+        </ImageNav>
+        <ImageNav text={"Jobs"}>
+          <BriefcaseIcon className="icon" />
+        </ImageNav>
+        <ImageNav text={"Messaging"}>
+          <ChatIcon className="icon" />
+        </ImageNav>
+        <ImageNav text={"Notification"}>
+          <BellIcon className="icon" />
+        </ImageNav>
+        <Profile />
       </div>
     </div>
   );

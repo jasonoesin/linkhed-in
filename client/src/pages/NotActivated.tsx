@@ -1,21 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useActivatedContext } from "../components/context/Activated";
 import { useAuthContext } from "../components/context/AuthContext";
 
 export default function NotActivated() {
-  const [activated, setActivated] = useState(false);
+  const { activated } = useActivatedContext();
 
-  const data = JSON.parse(localStorage?.getItem("data")!);
-
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/validate`, {
-        params: { email: data.email },
-      })
-      .then((res) => {
-        setActivated(res.data);
-      });
-  }, []);
+  if (activated) return <Navigate to={"/"} />;
 
   if (!activated)
     return (
