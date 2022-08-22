@@ -14,7 +14,7 @@ export default function Post(props: any) {
         </div>
 
         <div className="post-up-right">
-          <div className="post-up-right-name">[[Name]]</div>
+          <div className="post-up-right-name">{props.data?.User?.name}</div>
         </div>
       </div>
       <div className="post-text">{props.data?.text}</div>

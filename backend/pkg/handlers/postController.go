@@ -83,11 +83,14 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 	//
 
 	var postList []models.Post
-	h.DB.Where("user_id in (?)", tempArr).Order("post_id desc").Find(&postList)
+	h.DB.Joins("JOIN users on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Find(&postList)
+	var userList []models.User
+	h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Find(&userList)
 
 	type Temp struct {
-		PostID     int    `json:"post_id"`
-		UserID     uint   `json:"user"`
+		PostID     int  `json:"post_id"`
+		UserID     uint `json:"user"`
+		User       models.User
 		TotalLikes int    `json:"total_likes"`
 		Liked      bool   `json:"liked"`
 		AssetUrl   string `json:"asset"`
@@ -97,7 +100,7 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 
 	var obj = []Temp{}
 
-	for _, post := range postList {
+	for i, post := range postList {
 		res := h.DB.Where("post_id = ?", post.PostID).Find(&[]models.PostLike{})
 
 		res2 := h.DB.Where("post_id = ? and user_id = ?", post.PostID, tempUser.ID).Find(&models.PostLike{})
@@ -110,6 +113,7 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 		obj = append(obj, Temp{
 			PostID:     post.PostID,
 			UserID:     post.UserID,
+			User:       userList[i],
 			TotalLikes: int(res.RowsAffected),
 			Liked:      liked,
 			AssetUrl:   post.AssetUrl,
@@ -119,6 +123,7 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// h.DB.Save(&post)
+
 	json.NewEncoder(w).Encode(obj)
 }
 

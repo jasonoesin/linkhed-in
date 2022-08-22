@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ToastContext from "./components/context/ToastContext";
 import ResetPage from "./pages/ResetPage";
 import AuthProvider from "./components/context/AuthContext";
+import Messaging from "./pages/Messaging";
 
 const Protected = () => {
   return (
@@ -69,6 +70,7 @@ function App() {
                   <Route element={<NavLayout />}>
                     <Route path="/home" element={<Home />} />
                     <Route path="/network" element={<Network />} />
+                    <Route path="/messaging" element={<Messaging />} />
                     <Route path="/search/:query" element={<Search />} />
                   </Route>
                 </Route>

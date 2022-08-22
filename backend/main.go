@@ -52,6 +52,10 @@ func main() {
 	// Forgot-Password
 	router.HandleFunc("/forgot-password", h.ForgotPassword).Methods(http.MethodPost)
 
+	// Chat
+	router.HandleFunc("/chat", h.StartConversation).Methods(http.MethodPost)
+	router.HandleFunc("/chat", h.GetConversation).Methods(http.MethodGet)
+
 	log.Println("API is running!")
 	http.ListenAndServe(":8080", GORILLA_HANDLERS.CORS(GORILLA_HANDLERS.AllowedHeaders([]string{"X-Requested-With", "Access-Control-Allow-Origin", "Content-Type", "Authorization"}), GORILLA_HANDLERS.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"}), GORILLA_HANDLERS.AllowedOrigins([]string{"*"}))(router))
 }

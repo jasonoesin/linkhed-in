@@ -98,7 +98,7 @@ export default function Navbar() {
         <ImageNav text={"Jobs"}>
           <BriefcaseIcon className="icon" />
         </ImageNav>
-        <ImageNav text={"Messaging"}>
+        <ImageNav link={"/messaging"} text={"Messaging"}>
           <ChatIcon className="icon" />
         </ImageNav>
         <ImageNav text={"Notification"}>
