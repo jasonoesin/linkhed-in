@@ -33,6 +33,10 @@
         justify-content: center;
     }
 
+    .post-image img{
+        max-width: 26rem;
+    }
+
     .post-footer-up{
         margin-top: 1rem;
         display: flex;
@@ -61,17 +65,40 @@
     
     }
 
+
+    .post-video{
+        margin: 1rem 0px;
+        display: flex;
+        justify-content: center;
+        video
+        {
+        max-width: 26rem;
+        }
+
+    }
+
     .post-footer-down{
         margin-top: 1rem;
         display: flex;
         justify-content: space-evenly;
+
+        .liked{
+            color: lightblue;
+        }
 
         .icons{
             width: 30px;
         }
 
         .like, .comment ,.share{
+            cursor: pointer;
+            * {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
             display: flex;
+            flex-direction: row;
             align-items: center;
 
             > * {

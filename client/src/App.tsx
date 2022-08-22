@@ -14,6 +14,7 @@ import ActivatePage from "./pages/ActivatePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ToastContext from "./components/context/ToastContext";
 import ResetPage from "./pages/ResetPage";
+import AuthProvider from "./components/context/AuthContext";
 
 const Protected = () => {
   return (
@@ -51,29 +52,31 @@ const NavLayout = () => {
 function App() {
   return (
     <div className="">
-      <ToastContext>
-        <Activated>
-          <Routes>
-            <Route path="/link/:id" element={<ActivatePage />} />
-            <Route element={<Guest />}>
-              <Route path="/" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/forgot-password/:id" element={<ResetPage />} />
-            </Route>
-            <Route element={<Protected />}>
-              <Route path="/not-activated" element={<NotActivated />} />
-              <Route element={<Logged />}>
-                <Route element={<NavLayout />}>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/network" element={<Network />} />
-                  <Route path="/search/:query" element={<Search />} />
+      <AuthProvider>
+        <ToastContext>
+          <Activated>
+            <Routes>
+              <Route path="/link/:id" element={<ActivatePage />} />
+              <Route element={<Guest />}>
+                <Route path="/" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/forgot-password/:id" element={<ResetPage />} />
+              </Route>
+              <Route element={<Protected />}>
+                <Route path="/not-activated" element={<NotActivated />} />
+                <Route element={<Logged />}>
+                  <Route element={<NavLayout />}>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/network" element={<Network />} />
+                    <Route path="/search/:query" element={<Search />} />
+                  </Route>
                 </Route>
               </Route>
-            </Route>
-          </Routes>
-        </Activated>
-      </ToastContext>
+            </Routes>
+          </Activated>
+        </ToastContext>
+      </AuthProvider>
     </div>
   );
 }

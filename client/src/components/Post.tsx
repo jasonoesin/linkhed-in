@@ -1,8 +1,11 @@
 import { AnnotationIcon, ShareIcon, ThumbUpIcon } from "@heroicons/react/solid";
+import axios from "axios";
 import React from "react";
 import "../styles/Post.scss";
+import { useAuthContext } from "./context/AuthContext";
 
 export default function Post(props: any) {
+  const { getUser } = useAuthContext();
   return (
     <div className="post">
       <div className="post-up">
@@ -14,27 +17,75 @@ export default function Post(props: any) {
           <div className="post-up-right-name">[[Name]]</div>
         </div>
       </div>
-      <div className="post-text">Example Text</div>
+      <div className="post-text">{props.data?.text}</div>
 
       {/* Example image */}
-      <div className="post-image">
-        <img src="https://picsum.photos/400/400" />
-      </div>
+
+      {props.data?.asset_type === "image" && (
+        <div className="post-image">
+          <img src={props.data?.asset} />
+        </div>
+      )}
+
+      {props.data?.asset_type === "video" && (
+        <div className="post-video">
+          <video controls>
+            <source src={props.data?.asset} />
+          </video>
+        </div>
+      )}
 
       <div className="post-footer-up">
         <div className="left">
           <ThumbUpIcon className="thumbs" />
-          <div className="like-count">69</div>
+          <div className="like-count">{props.data?.total_likes}</div>
         </div>
         <div className="right">
-          <div className="comment-count">300 Comment</div>
-          <div className="share-count">300 Shares</div>
+          <div className="comment-count">0 Comment</div>
+          <div className="share-count">0 Shares</div>
         </div>
       </div>
       <div className="post-footer-down">
         <div className="like">
-          <ThumbUpIcon className="icons" />
-          <div>Like</div>
+          {props.data?.liked ? (
+            <div
+              onClick={() => {
+                var json = {
+                  email: getUser().email,
+                  post_id: props.data?.post_id,
+                };
+
+                axios
+                  .post(`http://localhost:8080/post/unlike`, json)
+                  .then((res) => {
+                    console.log(res.data);
+                    props.refetchData();
+                  });
+              }}
+            >
+              <ThumbUpIcon className="icons liked" />
+              <div>Unlike</div>
+            </div>
+          ) : (
+            <div
+              onClick={() => {
+                var json = {
+                  email: getUser().email,
+                  post_id: props.data?.post_id,
+                };
+
+                axios
+                  .post(`http://localhost:8080/post/like`, json)
+                  .then((res) => {
+                    console.log(res.data);
+                    props.refetchData();
+                  });
+              }}
+            >
+              <ThumbUpIcon className="icons" />
+              <div>Like</div>
+            </div>
+          )}
         </div>
         <div className="comment">
           <AnnotationIcon className="icons" />

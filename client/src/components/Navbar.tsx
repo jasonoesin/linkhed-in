@@ -19,7 +19,6 @@ const Profile = () => {
 
   useEffect(() => {
     let handler = (e: any) => {
-      console.log(e.target);
       if (curr.current == null) return;
       if ((!curr.current as any).contains(e.target)) setPop(false);
     };

@@ -86,18 +86,7 @@ func (h handler) GetAllConnectRequest(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-func (h handler) GetAllConnected(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	str := r.URL.Query().Get("email")
-	if str == "" {
-		json.NewEncoder(w).Encode("Error in reading payload")
-		return
-	}
-
-	tempUser, _ := h.UserFromEmail(str)
-	// var tempUser models.User
-	// h.DB.Where("email = ?", str).First(&tempUser)
-
+func (h handler) GetConnectedId(tempUser models.User) []int {
 	var conList []models.Connection
 	h.DB.Where("second = ? or first = ?", tempUser.ID, tempUser.ID).Find(&conList)
 
@@ -110,6 +99,36 @@ func (h handler) GetAllConnected(w http.ResponseWriter, r *http.Request) {
 			tempArr = append(tempArr, int(e.First))
 		}
 	}
+
+	return tempArr
+}
+
+func (h handler) GetAllConnected(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	str := r.URL.Query().Get("email")
+	if str == "" {
+		json.NewEncoder(w).Encode("Error in reading payload")
+		return
+	}
+
+	tempUser, _ := h.UserFromEmail(str)
+	// var tempUser models.User
+	// h.DB.Where("email = ?", str).First(&tempUser)
+
+	// var conList []models.Connection
+	// h.DB.Where("second = ? or first = ?", tempUser.ID, tempUser.ID).Find(&conList)
+
+	// var tempArr []int
+
+	// for _, e := range conList {
+	// 	if tempUser.ID == e.First {
+	// 		tempArr = append(tempArr, int(e.Second))
+	// 	} else {
+	// 		tempArr = append(tempArr, int(e.First))
+	// 	}
+	// }
+
+	tempArr := h.GetConnectedId(tempUser)
 
 	// fmt.Println(tempArr)
 

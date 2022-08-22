@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import "../styles/CreatePost.scss";
 import CreatePostPop from "./CreatePostPop";
 
-export default function CreatePost() {
+export default function CreatePost(props: any) {
   const [state, setState] = useState(false);
 
   const handleCloseIcon = () => {
-    console.log("test");
     setState(false);
   };
 
@@ -26,7 +25,12 @@ export default function CreatePost() {
         </div>
       </div>
 
-      {state ? <CreatePostPop handleCloseIcon={handleCloseIcon} /> : null}
+      {state ? (
+        <CreatePostPop
+          refetchData={props.refetchData}
+          handleCloseIcon={handleCloseIcon}
+        />
+      ) : null}
     </div>
   );
 }

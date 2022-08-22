@@ -25,6 +25,10 @@ func main() {
 
 	// Posts
 	router.HandleFunc("/post", h.AddPost).Methods(http.MethodPost)
+	router.HandleFunc("/post", h.UpdatePost).Methods(http.MethodPatch)
+	router.HandleFunc("/post", h.GetAllPost).Methods(http.MethodGet)
+	router.HandleFunc("/post/like", h.LikePost).Methods(http.MethodPost)
+	router.HandleFunc("/post/unlike", h.UnlikePost).Methods(http.MethodPost)
 
 	// Connect-Request
 	router.HandleFunc("/request-connect", h.AddConnectRequest).Methods(http.MethodPost)
@@ -49,5 +53,5 @@ func main() {
 	router.HandleFunc("/forgot-password", h.ForgotPassword).Methods(http.MethodPost)
 
 	log.Println("API is running!")
-	http.ListenAndServe(":8080", GORILLA_HANDLERS.CORS(GORILLA_HANDLERS.AllowedHeaders([]string{"X-Requested-With", "Access-Control-Allow-Origin", "Content-Type", "Authorization"}), GORILLA_HANDLERS.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}), GORILLA_HANDLERS.AllowedOrigins([]string{"*"}))(router))
+	http.ListenAndServe(":8080", GORILLA_HANDLERS.CORS(GORILLA_HANDLERS.AllowedHeaders([]string{"X-Requested-With", "Access-Control-Allow-Origin", "Content-Type", "Authorization"}), GORILLA_HANDLERS.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"}), GORILLA_HANDLERS.AllowedOrigins([]string{"*"}))(router))
 }
