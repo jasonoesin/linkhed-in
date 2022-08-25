@@ -16,7 +16,7 @@ func Init() *gorm.DB {
 		log.Fatalln(err)
 	}
 
-	db.AutoMigrate(&models.User{}, &models.Post{}, &models.ConnectRequest{}, &models.Link{}, &models.Connection{}, &models.Forgot{}, &models.PostLike{}, &models.Conversation{})
+	db.AutoMigrate(&models.User{}, &models.Post{}, &models.ConnectRequest{}, &models.Link{}, &models.Connection{}, &models.Forgot{}, &models.PostLike{}, &models.Conversation{}, &models.Education{}, &models.Experience{}, &models.Job{}, &models.View{})
 
 	return db
 }

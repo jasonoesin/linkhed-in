@@ -152,6 +152,26 @@ func (h handler) ValidateActivated(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tempUser.Activated)
 }
 
+func (h handler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	str := r.URL.Query().Get("email")
+	if str == "" {
+		json.NewEncoder(w).Encode("Error in reading payload")
+		return
+	}
+
+	var tempUser models.User
+	h.DB.Where("email = ?", str).First(&tempUser)
+
+	if tempUser.Email == "" {
+		json.NewEncoder(w).Encode("Email is not correct")
+		return
+	}
+
+	json.NewEncoder(w).Encode(tempUser)
+}
+
 func (h handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -206,4 +226,28 @@ func sendEmail(target string, link string, msg string) {
 	}
 
 	fmt.Println("Email Sent Successfully!")
+}
+
+func (h handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var temp models.User
+
+	err := json.NewDecoder(r.Body).Decode(&temp)
+	if err != nil {
+		json.NewEncoder(w).Encode("Error in reading payload")
+		return
+	}
+	var find models.User
+	h.DB.Where("id = ?", temp.ID).Find(&find)
+
+	if temp.ProfileUrl != "" {
+		find.ProfileUrl = temp.ProfileUrl
+	}
+	if temp.BackgroundUrl != "" {
+		find.BackgroundUrl = temp.BackgroundUrl
+	}
+
+	h.DB.Save(&find)
+	json.NewEncoder(w).Encode(find)
 }

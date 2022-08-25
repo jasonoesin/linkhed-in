@@ -16,6 +16,9 @@ import ToastContext from "./components/context/ToastContext";
 import ResetPage from "./pages/ResetPage";
 import AuthProvider from "./components/context/AuthContext";
 import Messaging from "./pages/Messaging";
+import UserProvider from "./components/context/UserContext";
+import ProfilePage from "./pages/ProfilePage";
+import ConnectProvider from "./components/context/ConnectContext";
 
 const Protected = () => {
   return (
@@ -43,10 +46,10 @@ const Guest = () => {
 
 const NavLayout = () => {
   return (
-    <>
+    <ConnectProvider>
       <Navbar />
       <Outlet />
-    </>
+    </ConnectProvider>
   );
 };
 
@@ -56,26 +59,29 @@ function App() {
       <AuthProvider>
         <ToastContext>
           <Activated>
-            <Routes>
-              <Route path="/link/:id" element={<ActivatePage />} />
-              <Route element={<Guest />}>
-                <Route path="/" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/forgot-password/:id" element={<ResetPage />} />
-              </Route>
-              <Route element={<Protected />}>
-                <Route path="/not-activated" element={<NotActivated />} />
-                <Route element={<Logged />}>
-                  <Route element={<NavLayout />}>
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/network" element={<Network />} />
-                    <Route path="/messaging" element={<Messaging />} />
-                    <Route path="/search/:query" element={<Search />} />
+            <UserProvider>
+              <Routes>
+                <Route path="/link/:id" element={<ActivatePage />} />
+                <Route element={<Guest />}>
+                  <Route path="/" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/forgot-password/:id" element={<ResetPage />} />
+                </Route>
+                <Route element={<Protected />}>
+                  <Route path="/not-activated" element={<NotActivated />} />
+                  <Route element={<Logged />}>
+                    <Route element={<NavLayout />}>
+                      <Route path="/home" element={<Home />} />
+                      <Route path="/network" element={<Network />} />
+                      <Route path="/messaging" element={<Messaging />} />
+                      <Route path="/search/:query" element={<Search />} />
+                      <Route path="/profile/:id" element={<ProfilePage />} />
+                    </Route>
                   </Route>
                 </Route>
-              </Route>
-            </Routes>
+              </Routes>
+            </UserProvider>
           </Activated>
         </ToastContext>
       </AuthProvider>

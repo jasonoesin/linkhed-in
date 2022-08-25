@@ -1,8 +1,16 @@
 @use "mixin" as m;
 
+
+.nav-container{
+    @include m.center;
+}
+
 .navbar{
+    z-index: 10;
+    @include m.white-box;
+    top: 0.5rem;
     position: fixed;
-    width: 100vw;
+    width: 95vw;
     background-color: white;
     padding: 0.5rem;
     display: flex;
@@ -34,7 +42,7 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-
+        
     }
 
     .profile-bar{

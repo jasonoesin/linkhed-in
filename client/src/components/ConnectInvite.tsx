@@ -2,13 +2,15 @@ import axios from "axios";
 import React from "react";
 import "../styles/ConnectInvite.scss";
 import { useToastContext } from "./context/ToastContext";
+import { GetProfilePicture } from "./firebase/GetProfilePicture";
 
 export default function ConnectInvite(props: any) {
   const { ToastSuccess } = useToastContext();
+  console.log(props);
   return (
     <div className="connect">
       <div className="connect-pic">
-        <img src="https://picsum.photos/300/300" />
+        <GetProfilePicture url={props?.url} />
       </div>
       <div className="connect-desc">
         <div className="connect-desc-name">{props.name}</div>

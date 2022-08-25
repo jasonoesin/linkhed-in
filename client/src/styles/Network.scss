@@ -3,7 +3,7 @@
 .page{
     background-color: #f3f2ef;
     height: fit-content;
-    padding: 5rem 10rem;
+    padding: 6rem 10rem;
     min-height: 100vh;
 
     display: flex;
@@ -24,6 +24,7 @@
 
     .invitation{
         @include m.rounded;
+        @include m.white-box;
 
         width: 30rem;
         display: flex;

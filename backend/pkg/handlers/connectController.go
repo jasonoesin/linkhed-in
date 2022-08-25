@@ -9,9 +9,23 @@ import (
 	"gorm.io/gorm"
 )
 
+func (h handler) UserFromNick(nick string) (models.User, *gorm.DB) {
+	var tempUser models.User
+	res := h.DB.Where("nick = ?", nick).Find(&tempUser)
+
+	return tempUser, res
+}
+
 func (h handler) UserFromEmail(email string) (models.User, *gorm.DB) {
 	var tempUser models.User
 	res := h.DB.Where("email = ?", email).Find(&tempUser)
+
+	return tempUser, res
+}
+
+func (h handler) UserFromId(id int) (models.User, *gorm.DB) {
+	var tempUser models.User
+	res := h.DB.Where("id = ?", id).Find(&tempUser)
 
 	return tempUser, res
 }

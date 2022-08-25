@@ -3,6 +3,7 @@ import axios from "axios";
 import React from "react";
 import "../styles/Post.scss";
 import { useAuthContext } from "./context/AuthContext";
+import { GetProfilePicture } from "./firebase/GetProfilePicture";
 
 export default function Post(props: any) {
   const { getUser } = useAuthContext();
@@ -10,7 +11,7 @@ export default function Post(props: any) {
     <div className="post">
       <div className="post-up">
         <div className="post-up-left">
-          <img src="https://picsum.photos/300/300" />
+          <GetProfilePicture url={props.data.User.profile_url} />
         </div>
 
         <div className="post-up-right">

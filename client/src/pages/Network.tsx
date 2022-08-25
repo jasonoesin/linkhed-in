@@ -35,9 +35,10 @@ export default function Network() {
           <div className="example">
             {conReq.length === 0 && <div>No Connection Request Matched</div>}
 
-            {conReq.map(({ id, name }) => {
+            {conReq.map(({ id, name, profile_url }) => {
               return (
                 <ConnectInvite
+                  url={profile_url ? profile_url : null}
                   id={id}
                   key={id + name}
                   name={name}

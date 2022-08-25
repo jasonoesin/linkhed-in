@@ -1,4 +1,9 @@
+
+    @use "mixin" as m;
+
 .doc{
+    @include m.white-box;
+
     background-color: white;
     box-sizing: border-box;
     padding: 1rem;
@@ -11,6 +16,8 @@
         align-items: center;
         img{
             width: 3rem;
+            height: 3rem;
+            object-fit: cover;
             border-radius: 100%;
         }
 

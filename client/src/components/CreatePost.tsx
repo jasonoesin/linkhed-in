@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "../styles/CreatePost.scss";
+import { useUserContext } from "./context/UserContext";
 import CreatePostPop from "./CreatePostPop";
+import { GetProfilePicture } from "./firebase/GetProfilePicture";
 
 export default function CreatePost(props: any) {
   const [state, setState] = useState(false);
@@ -9,11 +11,15 @@ export default function CreatePost(props: any) {
     setState(false);
   };
 
+  const { user } = useUserContext();
+
   return (
     <div className="doc">
       <div className="up">
         <div className="img-container">
-          <img src="https://picsum.photos/300/300" />
+          <GetProfilePicture
+            url={user?.profile_url ? user.profile_url : null}
+          />
         </div>
         <div
           onClick={() => {
