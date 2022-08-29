@@ -19,13 +19,13 @@ import UserChatProfile from "../components/UserChatProfile";
 import styles from "../styles/Messaging.module.scss";
 import Select from "react-select";
 import { useUserContext } from "../components/context/UserContext";
+import { GetProfilePicture } from "../components/firebase/GetProfilePicture";
 
 export default function Messaging() {
   const [current, setCurrent] = useState<any>(null);
   const { user } = useUserContext();
 
   const changeCurrent = (obj: any) => {
-    console.log(obj);
     getDoc(doc(db, "conversation", obj.conversation_id.toString())).then(
       (s) => {
         if (!s.exists()) {
@@ -86,7 +86,7 @@ export default function Messaging() {
           />
         </div>
         <div className={styles.box_right}>
-          <ChatArea current={current} />
+          <ChatArea current={current} profile_url={current?.profile_url} />
         </div>
       </div>
     </div>
@@ -114,8 +114,6 @@ const ChatArea = (props: any) => {
     return unsub;
   }, [props.current]);
 
-  //   console.log(props.current);
-
   const textRef = useRef<any>();
 
   return (
@@ -130,6 +128,7 @@ const ChatArea = (props: any) => {
                 type={props.current?.Current === obj.user.id ? "me" : "away"}
                 data={obj}
                 key={index}
+                profile_url={props?.profile_url}
               />
             );
           })}
@@ -174,7 +173,7 @@ const Chat = (props: any) => {
     return (
       <div className={styles.chat_area_chat}>
         <div className={styles.image}>
-          <img src="https://picsum.photos/300/300" />
+          <GetProfilePicture url={props?.profile_url} />
         </div>
         <div className={styles.name}>{props.data.text}</div>
       </div>

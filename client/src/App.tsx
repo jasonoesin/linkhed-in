@@ -19,6 +19,7 @@ import Messaging from "./pages/Messaging";
 import UserProvider from "./components/context/UserContext";
 import ProfilePage from "./pages/ProfilePage";
 import ConnectProvider from "./components/context/ConnectContext";
+import Footer from "./components/Footer";
 
 const Protected = () => {
   return (
@@ -55,7 +56,7 @@ const NavLayout = () => {
 
 function App() {
   return (
-    <div className="">
+    <div className="app">
       <AuthProvider>
         <ToastContext>
           <UserProvider>
@@ -81,6 +82,7 @@ function App() {
                   </Route>
                 </Route>
               </Routes>
+              <Footer />
             </Activated>
           </UserProvider>
         </ToastContext>

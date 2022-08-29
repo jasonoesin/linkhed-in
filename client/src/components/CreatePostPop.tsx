@@ -5,12 +5,15 @@ import "../styles/CreatePostPop.scss";
 import { useAuthContext } from "./context/AuthContext";
 import storage from "../../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useUserContext } from "./context/UserContext";
+import { GetProfilePicture } from "./firebase/GetProfilePicture";
 
 export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
   const [selectedImage, setSelectedImage] = useState<any | null>();
   const [selectedVideo, setSelectedVideo] = useState<any | null>();
 
-  const { user, getUser } = useAuthContext();
+  const { getUser } = useAuthContext();
+  const { user } = useUserContext();
 
   const imageChange = (e: any) => {
     if (selectedVideo) removeSelectedVideo();
@@ -48,9 +51,9 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
         </div>
         <div className="cred">
           <div className="img-container">
-            <img src="https://picsum.photos/300/300" />
+            <GetProfilePicture url={user?.profile_url} />
           </div>
-          <div className="name">[[Name]]</div>
+          <div className="name">{user?.name}</div>
         </div>
         <textarea ref={area} placeholder="What do you want to talk about?" />
         {selectedImage && (

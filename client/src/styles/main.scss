@@ -3,4 +3,19 @@
     box-sizing: border-box;
     padding: 0;
     font-family: myriad-pro, sans-serif;
+    
+
+    .app{
+        min-height: 100vh;
+        height: fit-content;
+        position: relative;
+        font-size: 0.95rem;
+    }
+
+    a{
+        all: unset;
+    }
 }   
+
+
+

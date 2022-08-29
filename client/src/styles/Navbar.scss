@@ -46,13 +46,17 @@
     }
 
     .profile-bar{
-        @include m.rounded;
+        @include m.white-box;
         background-color: white;
         position: absolute;
         padding: 1rem;
         top: 4.5rem;
-        right: 10rem;
         height: fit-content;
 
+        > * + *{
+            margin-top: 0.5rem;
+            cursor: pointer;
+
+        }
     }
 }

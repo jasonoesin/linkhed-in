@@ -17,14 +17,14 @@ const Profile = () => {
   const [pop, setPop] = useState(false);
   const nav = useNavigate();
 
-  let curr = useRef();
+  let curr = useRef<any>();
 
   const { user } = useUserContext();
 
   useEffect(() => {
     let handler = (e: any) => {
-      if (curr.current == null) return;
-      if ((!curr.current as any).contains(e.target)) setPop(false);
+      if (curr?.current == undefined) return;
+      if (!curr?.current?.contains(e.target)) setPop(false);
     };
     document.addEventListener("mousedown", handler);
     return () => {
@@ -34,31 +34,41 @@ const Profile = () => {
 
   return (
     <>
-      <div
-        onClick={() => {
-          setPop((pop) => !pop);
-        }}
-      >
-        <ImageNav text={"Me🡇"}>
-          <GetProfilePicture url={user?.profile_url} />
-        </ImageNav>
-      </div>
-
-      {pop && (
-        <div ref={curr.current} className="profile-bar">
-          <div className="Name">Jason</div>
-          <div className="profile">My Profile</div>
-          <div
-            onClick={() => {
-              localStorage.removeItem("data");
-              nav("/");
-            }}
-            className="sign-out"
-          >
-            Sign Out
-          </div>
+      <div ref={curr}>
+        <div
+          onClick={() => {
+            setPop((pop) => !pop);
+          }}
+          className=""
+        >
+          <ImageNav text={"Me🡇"}>
+            <GetProfilePicture url={user?.profile_url} />
+          </ImageNav>
         </div>
-      )}
+
+        {pop && (
+          <div className="profile-bar">
+            <div className="Name">Jason</div>
+            <div
+              onClick={() => {
+                nav("./profile/" + user?.nick);
+              }}
+              className="profile"
+            >
+              My Profile
+            </div>
+            <div
+              onClick={() => {
+                localStorage.removeItem("data");
+                nav("/");
+              }}
+              className="sign-out"
+            >
+              Sign Out
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };

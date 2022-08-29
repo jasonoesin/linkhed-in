@@ -80,16 +80,26 @@ $accentColor : white;
 }
 
 .footer{
-    position: fixed;
-    bottom: 0;
     padding: 2rem;
+    position: absolute;
+    bottom: 0;
 
     svg{
+        position: relative;
         width: 4rem;
+        top: 5px;
     }
 
     width: 100%;
 
     display: flex;
     justify-content: center;
+    align-items: center;
+
+    > * + * {
+        @include m.gray-text;
+        margin: 0 1rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import s from "../styles/Messaging.module.scss";
+import { GetProfilePicture } from "./firebase/GetProfilePicture";
 
 export default function UserChatProfile(props: any) {
   return (
@@ -11,7 +12,7 @@ export default function UserChatProfile(props: any) {
       }
     >
       <div className={s.image}>
-        <img src="https://picsum.photos/300/300" />
+        <GetProfilePicture url={props.data?.profile_url} />
       </div>
       <div className={s.name}>{props.data.name}</div>
     </div>
