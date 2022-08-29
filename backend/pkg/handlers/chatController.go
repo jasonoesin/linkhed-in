@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/jasonoesin/linkhed-in/pkg/models"
 )
@@ -88,4 +89,67 @@ func (h handler) GetConversation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(temp)
+}
+
+func (h handler) FindConversation(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	str := r.URL.Query().Get("email")
+	target_id := r.URL.Query().Get("id")
+
+	if str == "" || target_id == "" {
+		json.NewEncoder(w).Encode("Error in reading payload")
+		return
+	}
+
+	tempUser, _ := h.UserFromEmail(str)
+
+	temp := struct {
+		Current uint
+		models.Conversation
+		models.User
+	}{}
+
+	var conv models.Conversation
+	h.DB.Where("source = ? and destination = ? or source = ? and destination = ? ", tempUser.ID, target_id, target_id, tempUser.ID).Find(&conv)
+
+	if conv.ConversationID != 0 {
+
+		temp.Current = tempUser.ID
+		temp.Conversation = conv
+		if tempUser.ID == conv.Source {
+			var targetUser models.User
+			h.DB.Joins("conversations c on users.id = c.destination").Where("destination = ? ", target_id).Find(&targetUser)
+			temp.User = targetUser
+		} else {
+			var targetUser models.User
+			h.DB.Joins("conversations c on users.id = c.source").Where("source = ? ", target_id).Find(&targetUser)
+			temp.User = targetUser
+		}
+
+		json.NewEncoder(w).Encode(temp)
+	} else {
+
+		temp.Current = tempUser.ID
+
+		id, _ := strconv.ParseUint(target_id, 10, 32)
+		conv = models.Conversation{
+			SourceUser:  tempUser,
+			Destination: uint(id),
+		}
+
+		h.DB.Create(&conv)
+		temp.Conversation = conv
+		if tempUser.ID == conv.Source {
+			var targetUser models.User
+			h.DB.Joins("conversations c on users.id = c.destination").Where("destination = ? ", target_id).Find(&targetUser)
+			temp.User = targetUser
+		} else {
+			var targetUser models.User
+			h.DB.Joins("conversations c on users.id = c.source").Where("source = ? ", target_id).Find(&targetUser)
+			temp.User = targetUser
+		}
+
+		json.NewEncoder(w).Encode(conv)
+	}
 }

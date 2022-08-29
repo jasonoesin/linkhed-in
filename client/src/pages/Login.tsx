@@ -55,6 +55,18 @@ const Login = () => {
           <div className="text-2">Forgot Password?</div>
           <button>Sign In</button>
         </form>
+
+        <div className="login-new">
+          <p>New to LinkhedIn ?</p>
+          <p
+            onClick={() => {
+              nav("/register");
+            }}
+            className="join"
+          >
+            Join Now
+          </p>
+        </div>
       </div>
 
       <div className="footer">

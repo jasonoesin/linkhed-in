@@ -1,7 +1,8 @@
 import React from "react";
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useActivatedContext } from "../context/Activated";
+import { useUserContext } from "../context/UserContext";
 
 interface Props {
   children?: React.ReactNode;
@@ -9,6 +10,13 @@ interface Props {
 
 const LoggedRoute = ({ children }: Props) => {
   const { activated } = useActivatedContext();
+  const nav = useNavigate();
+
+  const { user } = useUserContext();
+
+  useEffect(() => {
+    if (!activated && activated !== undefined) nav("./not-activated");
+  }, [activated, user]);
 
   if (!activated && activated !== undefined)
     return <Navigate to={"/not-activated"} />;

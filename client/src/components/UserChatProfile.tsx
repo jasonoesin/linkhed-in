@@ -5,7 +5,7 @@ export default function UserChatProfile(props: any) {
   return (
     <div
       className={
-        props.current === props.data
+        props.current?.conversation_id === props.data?.conversation_id
           ? s.user_chat_profile_selected
           : s.user_chat_profile
       }

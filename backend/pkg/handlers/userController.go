@@ -103,8 +103,10 @@ func (h handler) SearchUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type TempAct struct {
-	Link string `json:"link"`
-	Name string `json:"name"`
+	Link       string `json:"link"`
+	Name       string `json:"name"`
+	Nick       string `json:"nick"`
+	Occupation string `json:"occupation"`
 }
 
 func (h handler) ActivateAccount(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +127,7 @@ func (h handler) ActivateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.DB.Exec("UPDATE users SET activated=true, name = ? from links WHERE links.user_id = users.id and links.link like ?", temp.Name, temp.Link); err != nil {
+	if err := h.DB.Exec("UPDATE users SET activated=true, name = ?, nick = ? , occupation = ? from links WHERE links.user_id = users.id and links.link like ?", temp.Name, temp.Nick, temp.Occupation, temp.Link); err != nil {
 		fmt.Println(err.Error)
 	}
 	json.NewEncoder(w).Encode("OK")

@@ -10,18 +10,59 @@ import {
   arrayUnion,
   query,
   where,
+  setDoc,
 } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { db } from "../../firebase-config";
 import { useAuthContext } from "../components/context/AuthContext";
 import UserChatProfile from "../components/UserChatProfile";
 import styles from "../styles/Messaging.module.scss";
+import Select from "react-select";
+import { useUserContext } from "../components/context/UserContext";
 
 export default function Messaging() {
   const [current, setCurrent] = useState<any>(null);
+  const { user } = useUserContext();
 
   const changeCurrent = (obj: any) => {
-    setCurrent(obj);
+    console.log(obj);
+    getDoc(doc(db, "conversation", obj.conversation_id.toString())).then(
+      (s) => {
+        if (!s.exists()) {
+          setDoc(doc(db, "conversation", obj.conversation_id.toString()), {
+            messages: [],
+          });
+          setCurrent(obj);
+          return;
+        }
+        setCurrent(obj);
+      }
+    );
+  };
+
+  const [options, setOptions] = useState<any>([]);
+
+  useEffect(() => {
+    if (user)
+      axios
+        .get(`http://localhost:8080/chat/connect`, {
+          params: { email: user.email },
+        })
+        .then((res) => {
+          setOptions(res.data);
+        });
+  }, [user]);
+
+  const onChangeSelect = (e: any) => {
+    if (user)
+      if (e.value)
+        axios
+          .get(`http://localhost:8080/chat/find`, {
+            params: { email: user.email, id: e.value },
+          })
+          .then((res) => {
+            changeCurrent(res.data);
+          });
   };
 
   return (
@@ -31,7 +72,13 @@ export default function Messaging() {
           <div className="">Messaging</div>
           <hr />
           <div className="">
-            <input placeholder="Search connected user" type="text" />
+            <Select
+              onChange={onChangeSelect}
+              className={styles.reactSelect}
+              placeholder="Search connected user"
+              options={options}
+            />
+            {/* <input placeholder= type="text" /> */}
           </div>
           <UserChatProfileRenderer
             current={current}
@@ -77,12 +124,12 @@ const ChatArea = (props: any) => {
       <hr />
       <div className={styles.chat_box}>
         {conv.length !== 0 &&
-          conv.map((obj: any) => {
+          conv.map((obj: any, index: any) => {
             return (
               <Chat
                 type={props.current?.Current === obj.user.id ? "me" : "away"}
                 data={obj}
-                key={obj.id}
+                key={index}
               />
             );
           })}

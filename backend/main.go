@@ -61,6 +61,8 @@ func main() {
 	// Chat
 	router.HandleFunc("/chat", h.StartConversation).Methods(http.MethodPost)
 	router.HandleFunc("/chat", h.GetConversation).Methods(http.MethodGet)
+	router.HandleFunc("/chat/connect", h.GetAllConnectedChat).Methods(http.MethodGet)
+	router.HandleFunc("/chat/find", h.FindConversation).Methods(http.MethodGet)
 
 	// Education
 	router.HandleFunc("/education", h.AddEducation).Methods(http.MethodPost)

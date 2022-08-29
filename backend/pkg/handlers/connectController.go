@@ -149,6 +149,48 @@ func (h handler) GetAllConnected(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tempArr)
 }
 
+func (h handler) GetAllConnectedChat(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	str := r.URL.Query().Get("email")
+	if str == "" {
+		json.NewEncoder(w).Encode("Error in reading payload")
+		return
+	}
+
+	tempUser, _ := h.UserFromEmail(str)
+
+	var conList []models.Connection
+	h.DB.Where("second = ? or first = ?", tempUser.ID, tempUser.ID).Find(&conList)
+
+	type Temp struct {
+		Value int    `json:"value"`
+		Label string `json:"label"`
+	}
+
+	var tempArr []Temp
+
+	for _, e := range conList {
+		var user models.User
+		if tempUser.ID == e.First {
+			h.DB.Where("id = ?", e.Second).Find(&user)
+
+			tempArr = append(tempArr, Temp{
+				Value: int(user.ID),
+				Label: user.Name,
+			})
+		} else {
+			h.DB.Where("id = ?", e.First).Find(&user)
+
+			tempArr = append(tempArr, Temp{
+				Value: int(user.ID),
+				Label: user.Name,
+			})
+		}
+	}
+
+	json.NewEncoder(w).Encode(tempArr)
+}
+
 func (h handler) DeclineConnection(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

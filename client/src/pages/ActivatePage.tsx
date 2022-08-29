@@ -43,20 +43,23 @@ export default function ActivatePage() {
       <div className="content">
         <form
           action=""
-          onSubmit={(e) => {
+          onSubmit={(e: any) => {
             e.preventDefault();
-            if ((e.target as HTMLFormElement).full.value !== "") {
+            if (
+              (e.target as HTMLFormElement).full.value !== "" &&
+              (e.target as HTMLFormElement).nick.value !== "" &&
+              (e.target as HTMLFormElement).occupation.value !== ""
+            ) {
               const json = {
                 link: params.id,
                 name: (e.target as HTMLFormElement).full.value,
+                nick: (e.target as HTMLFormElement).nick.value,
+                occupation: (e.target as HTMLFormElement).occupation.value,
               };
 
               axios.post(`http://localhost:8080/activate`, json).then((res) => {
-                console.log(res);
-                console.log(res.data);
+                nav("/");
               });
-
-              nav("/");
             }
           }}
           className="white-box"
@@ -64,11 +67,15 @@ export default function ActivatePage() {
           {state ? (
             <>
               <div className="title">Activate your account</div>
-              <div className="text-1">
-                Please fill your first name and last name
+              <div style={{}} className="text-1">
+                Please fill your full name, username, and your current
+                occupation
               </div>
 
               <input id="full" placeholder="Full Name" type="text" />
+              <input id="nick" placeholder="User Name" type="text" />
+              <input id="occupation" placeholder="Occupation" type="text" />
+
               <button>Activate account</button>
             </>
           ) : (

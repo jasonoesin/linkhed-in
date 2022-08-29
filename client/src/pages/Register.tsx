@@ -52,6 +52,18 @@ const Register = () => {
           <input id="password" placeholder="Password" type="password" />
           <button>Sign Up</button>
         </form>
+
+        <div className="login-new">
+          <p>Already On LinkhedIn ?</p>
+          <p
+            onClick={() => {
+              nav("/");
+            }}
+            className="join"
+          >
+            Sign In
+          </p>
+        </div>
       </div>
 
       <div className="footer">

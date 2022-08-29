@@ -1,5 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useUserContext } from "./UserContext";
 
 const ActivatedContext = createContext({} as any);
 
@@ -7,6 +9,7 @@ export default function Activated({ children }: any) {
   const [activated, setActivated] = useState();
 
   const data = JSON.parse(localStorage?.getItem("data")!);
+  const loc = useLocation();
 
   useEffect(() => {
     if (data)
@@ -17,7 +20,7 @@ export default function Activated({ children }: any) {
         .then((res) => {
           setActivated(res.data);
         });
-  }, []);
+  }, [loc]);
 
   return (
     <ActivatedContext.Provider value={{ activated }}>

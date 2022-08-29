@@ -1,3 +1,6 @@
+
+@use 'mixin' as m;
+
 $primaryColor: rgba(10,102,194,255);
 $secondaryColor : beige;
 $accentColor : white;
@@ -7,9 +10,26 @@ $accentColor : white;
     padding: 2rem;
 }
 
+
 .content{
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    width: fit-content;
+    align-items: center;
+    margin: auto;
+
+    .login-new{
+        margin-top: 4rem;
+        display: flex;
+        justify-content: center;
+        
+        .join{
+            margin-left: 1rem;
+            @include m.gray-text;
+            cursor: pointer;
+        }
+    }
     
     .white-box{
 

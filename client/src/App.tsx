@@ -58,8 +58,8 @@ function App() {
     <div className="">
       <AuthProvider>
         <ToastContext>
-          <Activated>
-            <UserProvider>
+          <UserProvider>
+            <Activated>
               <Routes>
                 <Route path="/link/:id" element={<ActivatePage />} />
                 <Route element={<Guest />}>
@@ -81,8 +81,8 @@ function App() {
                   </Route>
                 </Route>
               </Routes>
-            </UserProvider>
-          </Activated>
+            </Activated>
+          </UserProvider>
         </ToastContext>
       </AuthProvider>
     </div>
