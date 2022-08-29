@@ -41,6 +41,7 @@ const Login = () => {
 
               if (res.data?.token) {
                 localStorage.setItem("data", JSON.stringify(res.data));
+                window.location.reload();
                 nav("/home");
               }
             });

@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/jasonoesin/linkhed-in/pkg/models"
@@ -70,6 +71,9 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	str := r.URL.Query().Get("email")
+	limit := r.URL.Query().Get("limit")
+	offset := r.URL.Query().Get("offset")
+
 	if str == "" {
 		json.NewEncoder(w).Encode("Error in reading payload")
 		return
@@ -84,9 +88,27 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 	//
 
 	var postList []models.Post
-	h.DB.Joins("JOIN users on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Find(&postList)
 	var userList []models.User
-	h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Find(&userList)
+
+	if limit == "" || offset == "" {
+		h.DB.Joins("JOIN users on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Limit(3).Find(&postList)
+		h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Limit(3).Find(&userList)
+	} else {
+		var total int64
+		h.DB.Model(&models.Post{}).Joins("JOIN users on users.id = posts.user_id").Where("user_id in (?)", tempArr).Where("user_id in (?)", tempArr).Count(&total)
+
+		offset, _ := strconv.Atoi(offset)
+
+		newLimit := 3
+
+		if offset > int(total) {
+			newLimit = (int(total) - (offset))
+		}
+
+		h.DB.Joins("JOIN users on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Limit(newLimit).Offset(offset).Find(&postList)
+		h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("user_id in (?)", tempArr).Order("post_id desc").Limit(newLimit).Offset(offset).Find(&userList)
+
+	}
 
 	type Temp struct {
 		PostID     int  `json:"post_id"`
@@ -97,6 +119,7 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 		AssetUrl   string `json:"asset"`
 		AssetType  string `json:"asset_type"`
 		Text       string `json:"text"`
+		Total      int    `json:"total"`
 	}
 
 	var obj = []Temp{}

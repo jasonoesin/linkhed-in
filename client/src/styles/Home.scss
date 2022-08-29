@@ -22,4 +22,11 @@
             margin-top: 1rem;
         }
     }
+
+    .infinite{
+        overflow: none !important;
+        >  * + * {
+            margin-top: 1rem;
+        }
+    }
 }

@@ -48,7 +48,7 @@ const Profile = () => {
 
         {pop && (
           <div className="profile-bar">
-            <div className="Name">Jason</div>
+            <div className="Name">{user?.name}</div>
             <div
               onClick={() => {
                 nav("./profile/" + user?.nick);

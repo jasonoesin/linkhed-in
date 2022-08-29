@@ -1,17 +1,44 @@
 import { AnnotationIcon, ShareIcon, ThumbUpIcon } from "@heroicons/react/solid";
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Post.scss";
 import { useAuthContext } from "./context/AuthContext";
 import { GetProfilePicture } from "./firebase/GetProfilePicture";
+import OnHoverUser from "./OnHoverUser";
 
 export default function Post(props: any) {
   const { getUser } = useAuthContext();
+  const [hovered, setHovered] = useState(false);
+  const nav = useNavigate();
   return (
     <div className="post">
-      <div className="post-up">
+      {hovered && (
+        <div
+          onClick={() => {
+            nav("../profile/" + props.data.User.nick);
+          }}
+          onMouseEnter={() => {
+            setHovered(true);
+          }}
+          onMouseLeave={() => {
+            setHovered(false);
+          }}
+        >
+          <OnHoverUser data={props.data} />
+        </div>
+      )}
+      <div
+        onMouseEnter={() => {
+          setHovered(true);
+        }}
+        onMouseLeave={() => {
+          setHovered(false);
+        }}
+        className="post-up"
+      >
         <div className="post-up-left">
-          <GetProfilePicture url={props.data.User.profile_url} />
+          <GetProfilePicture url={props.data?.User?.profile_url} />
         </div>
 
         <div className="post-up-right">

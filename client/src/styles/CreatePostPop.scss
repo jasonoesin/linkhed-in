@@ -13,6 +13,7 @@
     width: 100vw;
     height: 100vh;
     overflow-y: scroll;
+    z-index: 15;
     
     .white-box{
         @include m.white-box;

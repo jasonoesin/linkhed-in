@@ -2,6 +2,8 @@
 
 .post{
     width: 30rem;
+    position: relative;
+
 
     display: flex;
     flex-direction: column;
@@ -9,7 +11,10 @@
     height: fit-content;
     padding: 1rem;
 
+
+
     .post-up{
+        cursor: pointer;
         display: flex;
         align-items: center;
         height: 5rem;
@@ -112,5 +117,41 @@
             width: 8rem;
         }
 
+    }
+
+    .hover{
+        width: 25rem;
+        padding: 1rem 2rem;
+        height: 5rem;
+        position: absolute;
+        @include m.white-box;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+
+        .left{
+            img{
+                width: 3rem;
+                height: 3rem;
+                object-fit: cover;
+                border-radius: 100%;
+            }
+        }
+
+        .right{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 1rem;
+
+            .hover-occupation{
+                @include m.gray-text;
+            }
+
+            .hover-nick{
+                font-style: italic;
+                @include m.gray-text;
+            }
+        }
     }
 }
