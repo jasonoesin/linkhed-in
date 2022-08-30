@@ -20,6 +20,8 @@ import UserProvider from "./components/context/UserContext";
 import ProfilePage from "./pages/ProfilePage";
 import ConnectProvider from "./components/context/ConnectContext";
 import Footer from "./components/Footer";
+import Job from "./pages/Job";
+import Notification from "./pages/Notification";
 
 const Protected = () => {
   return (
@@ -76,6 +78,9 @@ function App() {
                       <Route path="/home" element={<Home />} />
                       <Route path="/network" element={<Network />} />
                       <Route path="/messaging" element={<Messaging />} />
+                      <Route path="/job" element={<Job />} />
+                      <Route path="/notification" element={<Notification />} />
+
                       <Route path="/search/:query" element={<Search />} />
                       <Route path="/profile/:id" element={<ProfilePage />} />
                     </Route>

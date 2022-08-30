@@ -9,6 +9,7 @@ import { GetProfilePicture } from "../components/firebase/GetProfilePicture";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import storage from "../../firebase-config";
 import bg from "../assets/profile_bg.jpg";
+import { useConnectContext } from "../components/context/ConnectContext";
 
 export default function ProfilePage() {
   const [current, setCurrent] = useState<any>(false);
@@ -78,6 +79,8 @@ export default function ProfilePage() {
       .then((res) => {});
   }
 
+  const { connects } = useConnectContext();
+
   return (
     <div className="page">
       <div className={s.page_container}>
@@ -144,6 +147,33 @@ export default function ProfilePage() {
             >
               {current.occupation}
             </div>
+
+            {user?.id !== current?.id && (
+              <>
+                {connects?.includes(current?.id) ? (
+                  <div className={s.profile_connected}>Connected</div>
+                ) : (
+                  <div
+                    onClick={() => {
+                      const json = {
+                        message: "Message Example",
+                        from: user?.email,
+                        target: current?.id,
+                      };
+
+                      axios
+                        .post(`http://localhost:8080/request-connect`, json)
+                        .then((res) => {
+                          console.log(res.data);
+                        });
+                    }}
+                    className={s.profile_connect}
+                  >
+                    Connect
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
 

@@ -184,5 +184,24 @@
         *{
             margin: 0;
         }
+
+        .profile_connect{
+            @include m.white-box;
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .profile_connected{
+            @include m.white-box;
+            background-color: gray;
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            color: white;
+        }
     }
 }

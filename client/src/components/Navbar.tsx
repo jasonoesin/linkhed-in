@@ -110,13 +110,13 @@ export default function Navbar() {
           <ImageNav link={"/network"} text={"My Network"}>
             <GlobeIcon className="icon" />
           </ImageNav>
-          <ImageNav text={"Jobs"}>
+          <ImageNav link={"/job"} text={"Jobs"}>
             <BriefcaseIcon className="icon" />
           </ImageNav>
           <ImageNav link={"/messaging"} text={"Messaging"}>
             <ChatIcon className="icon" />
           </ImageNav>
-          <ImageNav text={"Notification"}>
+          <ImageNav link={"/notification"} text={"Notification"}>
             <BellIcon className="icon" />
           </ImageNav>
           <Profile />

@@ -26,6 +26,7 @@
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
+        gap: 1rem;
         input{
             all: unset;
             background-color: #eef3f8 ;
@@ -33,6 +34,7 @@
             width: 15rem;
             padding: 5px;
             box-sizing: border-box;
+            border-radius: 3px;
         }
     }
 

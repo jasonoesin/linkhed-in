@@ -3,12 +3,15 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Post.scss";
+import Comment from "./Comment";
 import { useAuthContext } from "./context/AuthContext";
 import { GetProfilePicture } from "./firebase/GetProfilePicture";
 import OnHoverUser from "./OnHoverUser";
 
 export default function Post(props: any) {
   const { getUser } = useAuthContext();
+  const [onComment, setOnComment] = useState(false);
+
   const [hovered, setHovered] = useState(false);
   const nav = useNavigate();
   return (
@@ -115,7 +118,12 @@ export default function Post(props: any) {
             </div>
           )}
         </div>
-        <div className="comment">
+        <div
+          onClick={() => {
+            setOnComment(!onComment);
+          }}
+          className="comment"
+        >
           <AnnotationIcon className="icons" />
           <div>Comment</div>
         </div>
@@ -124,6 +132,7 @@ export default function Post(props: any) {
           <div className="">Share</div>
         </div>
       </div>
+      {onComment && <Comment data={props.data} />}
     </div>
   );
 }
