@@ -93,6 +93,10 @@ func main() {
 	router.HandleFunc("/comment", h.AddComment).Methods(http.MethodPost)
 	router.HandleFunc("/comment", h.GetComment).Methods(http.MethodGet)
 
+	// Reply
+	router.HandleFunc("/reply", h.AddReply).Methods(http.MethodPost)
+	router.HandleFunc("/reply", h.GetReply).Methods(http.MethodGet)
+
 	log.Println("API is running!")
 	http.ListenAndServe(":8080", GORILLA_HANDLERS.CORS(GORILLA_HANDLERS.AllowedHeaders([]string{"X-Requested-With", "Access-Control-Allow-Origin", "Content-Type", "Authorization"}), GORILLA_HANDLERS.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"}), GORILLA_HANDLERS.AllowedOrigins([]string{"*"}))(router))
 }
