@@ -3,6 +3,11 @@
     box-sizing: border-box;
     padding: 0;
     font-family: myriad-pro, sans-serif;
+
+    hr{
+        border: none;
+        border-top: 1px solid lightgray;
+    }
     
 
     .app{

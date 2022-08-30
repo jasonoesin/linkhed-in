@@ -42,8 +42,8 @@ func (h handler) GetReply(w http.ResponseWriter, r *http.Request) {
 	var users []models.User
 
 	if offset == "" {
-		h.DB.Where("comment_id = ? ", comment_id).Order("comment_id desc").Limit(3).Find(&replies)
-		h.DB.Joins("join replies r on r.user_id = users.id").Where("r.comment_id = ? ", comment_id).Order("comment_id desc").Limit(3).Find(&users)
+		h.DB.Where("comment_id = ? ", comment_id).Limit(1).Find(&replies)
+		h.DB.Joins("join replies r on r.user_id = users.id").Where("r.comment_id = ? ", comment_id).Limit(1).Find(&users)
 	} else {
 		var total int64
 		h.DB.Model(&models.Reply{}).Where("comment_id = ? ", comment_id).Count(&total)
@@ -55,8 +55,8 @@ func (h handler) GetReply(w http.ResponseWriter, r *http.Request) {
 		if offset > int(total) {
 			newLimit = (int(total) - (offset))
 		}
-		h.DB.Where("comment_id = ? ", comment_id).Order("comment_id desc").Limit(newLimit).Offset(offset).Find(&replies)
-		h.DB.Joins("join replies r on r.user_id = users.id").Where("r.comment_id = ? ", comment_id).Order("comment_id desc").Limit(newLimit).Offset(offset).Find(&users)
+		h.DB.Where("comment_id = ? ", comment_id).Limit(newLimit).Offset(offset).Find(&replies)
+		h.DB.Joins("join replies r on r.user_id = users.id").Where("r.comment_id = ? ", comment_id).Limit(newLimit).Offset(offset).Find(&users)
 	}
 
 	var temp []Temp

@@ -43,7 +43,7 @@ const PostRenderer: any = () => {
   const hasMoreRef = useRef<boolean>(true);
 
   const fetchMore = () => {
-    console.log("Fetching...");
+    // console.log("Fetching...");
     axios
       .get(`http://localhost:8080/post`, {
         params: {
@@ -67,7 +67,7 @@ const PostRenderer: any = () => {
       });
   };
 
-  console.log("Post :", posts);
+  // console.log("Post :", posts);
 
   return (
     <>

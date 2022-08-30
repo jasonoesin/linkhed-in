@@ -112,15 +112,16 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Temp struct {
-		PostID     int  `json:"post_id"`
-		UserID     uint `json:"user"`
-		User       models.User
-		TotalLikes int    `json:"total_likes"`
-		Liked      bool   `json:"liked"`
-		AssetUrl   string `json:"asset"`
-		AssetType  string `json:"asset_type"`
-		Text       string `json:"text"`
-		Total      int    `json:"total"`
+		PostID       int  `json:"post_id"`
+		UserID       uint `json:"user"`
+		User         models.User
+		TotalLikes   int    `json:"total_likes"`
+		Liked        bool   `json:"liked"`
+		AssetUrl     string `json:"asset"`
+		AssetType    string `json:"asset_type"`
+		Text         string `json:"text"`
+		Total        int    `json:"total"`
+		TotalComment int    `json:"total_comment"`
 	}
 
 	var obj = []Temp{}
@@ -135,21 +136,41 @@ func (h handler) GetAllPost(w http.ResponseWriter, r *http.Request) {
 			liked = true
 		}
 
+		TotalComment := h.TotalComments(post.PostID)
+
 		obj = append(obj, Temp{
-			PostID:     post.PostID,
-			UserID:     post.UserID,
-			User:       userList[i],
-			TotalLikes: int(res.RowsAffected),
-			Liked:      liked,
-			AssetUrl:   post.AssetUrl,
-			AssetType:  post.AssetType,
-			Text:       post.Text,
+			PostID:       post.PostID,
+			UserID:       post.UserID,
+			User:         userList[i],
+			TotalLikes:   int(res.RowsAffected),
+			Liked:        liked,
+			AssetUrl:     post.AssetUrl,
+			AssetType:    post.AssetType,
+			Text:         post.Text,
+			TotalComment: int(TotalComment),
 		})
 	}
 
 	// h.DB.Save(&post)
 
 	json.NewEncoder(w).Encode(obj)
+}
+
+func (h handler) TotalComments(post_id int) int {
+	var TotalComment int64
+	h.DB.Model(&models.Comment{}).Where("post_id = ?", post_id).Count(&TotalComment)
+
+	var comments []models.Comment
+	h.DB.Where("post_id = ?", post_id).Find(&comments)
+
+	for _, comment := range comments {
+		var Temp int64
+		h.DB.Model(&models.Reply{}).Where("comment_id = ?", comment.CommentId).Count(&Temp)
+
+		TotalComment += (Temp)
+	}
+
+	return int(TotalComment)
 }
 
 func (h handler) SearchPost(w http.ResponseWriter, r *http.Request) {
@@ -190,14 +211,15 @@ func (h handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Temp struct {
-		PostID     int  `json:"post_id"`
-		UserID     uint `json:"user"`
-		User       models.User
-		TotalLikes int    `json:"total_likes"`
-		Liked      bool   `json:"liked"`
-		AssetUrl   string `json:"asset"`
-		AssetType  string `json:"asset_type"`
-		Text       string `json:"text"`
+		PostID       int  `json:"post_id"`
+		UserID       uint `json:"user"`
+		User         models.User
+		TotalLikes   int    `json:"total_likes"`
+		Liked        bool   `json:"liked"`
+		AssetUrl     string `json:"asset"`
+		AssetType    string `json:"asset_type"`
+		Text         string `json:"text"`
+		TotalComment int    `json:"total_comment"`
 	}
 
 	var obj = []Temp{}
@@ -212,15 +234,18 @@ func (h handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 			liked = true
 		}
 
+		TotalComment := h.TotalComments(post.PostID)
+
 		obj = append(obj, Temp{
-			PostID:     post.PostID,
-			UserID:     post.UserID,
-			User:       userList[i],
-			TotalLikes: int(res.RowsAffected),
-			Liked:      liked,
-			AssetUrl:   post.AssetUrl,
-			AssetType:  post.AssetType,
-			Text:       post.Text,
+			PostID:       post.PostID,
+			UserID:       post.UserID,
+			User:         userList[i],
+			TotalLikes:   int(res.RowsAffected),
+			Liked:        liked,
+			AssetUrl:     post.AssetUrl,
+			AssetType:    post.AssetType,
+			Text:         post.Text,
+			TotalComment: TotalComment,
 		})
 	}
 

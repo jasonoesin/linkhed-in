@@ -72,7 +72,9 @@ export default function Post(props: any) {
           <div className="like-count">{props.data?.total_likes}</div>
         </div>
         <div className="right">
-          <div className="comment-count">0 Comment</div>
+          <div className="comment-count">
+            {props.data?.total_comment} Comment
+          </div>
           <div className="share-count">0 Shares</div>
         </div>
       </div>
@@ -89,7 +91,7 @@ export default function Post(props: any) {
                 axios
                   .post(`http://localhost:8080/post/unlike`, json)
                   .then((res) => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     props.refetchData();
                   });
               }}
@@ -108,7 +110,7 @@ export default function Post(props: any) {
                 axios
                   .post(`http://localhost:8080/post/like`, json)
                   .then((res) => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     props.refetchData();
                   });
               }}
