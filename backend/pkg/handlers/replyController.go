@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,11 +23,75 @@ func (h handler) AddReply(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(temp)
 }
 
+func (h handler) AddReplyLike(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	temp := struct {
+		ReplyId uint `json:"reply_id"`
+		UserId  uint `json:"user_id"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&temp)
+	if err != nil {
+		json.NewEncoder(w).Encode("Error in reading payload.")
+		return
+	}
+
+	var replyLike models.ReplyLike
+	h.DB.Where("reply_id = ?", temp.ReplyId).Find(&replyLike)
+
+	if replyLike.ReplyId == 0 {
+		replyLike.ReplyId = temp.ReplyId
+		replyLike.UserId = append(replyLike.UserId, int64(temp.UserId))
+
+		h.DB.Create(&replyLike)
+	} else {
+		replyLike.UserId = append(replyLike.UserId, int64(temp.UserId))
+		h.DB.Save(&replyLike)
+	}
+
+	json.NewEncoder(w).Encode(replyLike)
+}
+
+func (h handler) UnlikeReply(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	temp := struct {
+		ReplyId uint `json:"reply_id"`
+		UserId  uint `json:"user_id"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&temp)
+	if err != nil {
+		json.NewEncoder(w).Encode("Error in reading payload.")
+		return
+	}
+
+	var replyLike models.ReplyLike
+	h.DB.Where("reply_id = ?", temp.ReplyId).Find(&replyLike)
+
+	for i, u := range replyLike.UserId {
+		if u == int64(temp.UserId) {
+			fmt.Println("yes")
+			replyLike.UserId[i] = replyLike.UserId[len(replyLike.UserId)-1]
+			replyLike.UserId = replyLike.UserId[:len(replyLike.UserId)-1]
+			break
+		}
+	}
+
+	h.DB.Save(&replyLike)
+
+	json.NewEncoder(w).Encode(replyLike)
+}
+
 func (h handler) GetReply(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	comment_id := r.URL.Query().Get("comment_id")
 	offset := r.URL.Query().Get("offset")
+	getId := r.URL.Query().Get("user_id")
+
+	user_id, _ := strconv.Atoi(getId)
 
 	if comment_id == "" {
 		json.NewEncoder(w).Encode("Error in reading payload")
@@ -34,8 +99,10 @@ func (h handler) GetReply(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Temp struct {
-		Reply models.Reply
-		User  models.User
+		Reply      models.Reply
+		User       models.User
+		TotalLikes int  `json:"total_likes"`
+		Liked      bool `json:"liked"`
 	}
 
 	var replies []models.Reply
@@ -61,10 +128,24 @@ func (h handler) GetReply(w http.ResponseWriter, r *http.Request) {
 
 	var temp []Temp
 
-	for i, _ := range replies {
+	for i, r := range replies {
+		var replyLike models.ReplyLike
+		h.DB.Where("reply_id = ? ", r.ReplyId).Find(&replyLike)
+
+		var liked bool
+
+		for _, u := range replyLike.UserId {
+			if u == int64(user_id) {
+				liked = true
+				break
+			}
+		}
+
 		temp = append(temp, Temp{
-			Reply: replies[i],
-			User:  users[i],
+			Reply:      replies[i],
+			User:       users[i],
+			TotalLikes: len(replyLike.UserId),
+			Liked:      liked,
 		})
 	}
 

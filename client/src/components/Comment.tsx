@@ -70,7 +70,7 @@ export default function Comment(props: any) {
           offsetRef.current += 3;
           setFetching(false);
           setNext(true);
-        }, 1500);
+        }, 1000);
       });
   };
 
@@ -160,7 +160,7 @@ const CommentComponent = (props: any) => {
   useEffect(() => {
     axios
       .get(`http://localhost:8080/reply`, {
-        params: { comment_id: props.comment?.CommentId },
+        params: { comment_id: props.comment?.CommentId, user_id: user?.id },
       })
       .then((res) => {
         if (res.data === null || res.data === undefined) {
@@ -192,6 +192,7 @@ const CommentComponent = (props: any) => {
         params: {
           comment_id: props.comment?.CommentId,
           offset: offsetRef.current,
+          user_id: user?.id,
         },
       })
       .then((res) => {
@@ -219,7 +220,7 @@ const CommentComponent = (props: any) => {
           offsetRef.current += 3;
           setFetching(false);
           setNext(true);
-        }, 1500);
+        }, 1000);
       });
   };
 
@@ -258,7 +259,14 @@ const CommentComponent = (props: any) => {
       </div>
       {replies &&
         replies.map((data: any, index: any) => {
-          return <Reply setOnReply={setOnReply} key={index} data={data} />;
+          return (
+            <Reply
+              current={user}
+              setOnReply={setOnReply}
+              key={index}
+              data={data}
+            />
+          );
         })}
       {replies && next && (
         <button
@@ -341,7 +349,45 @@ const Reply = (props: any) => {
           </div>
           <div className="comment-bottom">
             <div className="bottom-left">
-              <div className="like">Like</div>
+              {!props.data.liked && (
+                <div
+                  onClick={() => {
+                    const json = {
+                      reply_id: reply.ReplyId,
+                      user_id: props?.current?.id,
+                    };
+
+                    axios
+                      .post(`http://localhost:8080/reply/like`, json)
+                      .then((res) => {
+                        console.log(res.data);
+                      });
+                  }}
+                  className="like"
+                >
+                  Like
+                </div>
+              )}
+              {props.data.liked && (
+                <div
+                  onClick={() => {
+                    const json = {
+                      reply_id: reply.ReplyId,
+                      user_id: props?.current?.id,
+                    };
+
+                    axios
+                      .post(`http://localhost:8080/reply/unlike`, json)
+                      .then((res) => {
+                        console.log(res.data);
+                      });
+                  }}
+                  className="like"
+                >
+                  Unlike
+                </div>
+              )}
+
               <div
                 onClick={() => {
                   props.setOnReply(true);
@@ -352,7 +398,7 @@ const Reply = (props: any) => {
               </div>
             </div>
             <div className="bottom-right">
-              <div className="total-like">0 Likes</div>
+              <div className="total-like">{props?.data?.total_likes} Likes</div>
               <div className="total-reply">0 Replies</div>
             </div>
           </div>

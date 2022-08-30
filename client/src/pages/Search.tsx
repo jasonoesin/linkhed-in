@@ -131,7 +131,7 @@ const SearchPost = (props: any) => {
             }),
           ]);
           offsetRef.current += 3;
-        }, 1500);
+        }, 1000);
       });
   };
 
