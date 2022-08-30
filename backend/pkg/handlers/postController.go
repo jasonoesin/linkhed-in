@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -156,15 +157,37 @@ func (h handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 
 	str := r.URL.Query().Get("query")
 	id := r.URL.Query().Get("id")
+
+	limit := r.URL.Query().Get("limit")
+	offset := r.URL.Query().Get("offset")
+
 	if str == "" {
 		json.NewEncoder(w).Encode("Error in reading payload")
 		return
 	}
 
 	var tempPosts []models.Post
-	h.DB.Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Find(&tempPosts)
 	var userList []models.User
-	h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Find(&userList)
+
+	if limit == "" || offset == "" {
+		h.DB.Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Limit(3).Find(&tempPosts)
+		h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Limit(3).Find(&userList)
+	} else {
+		var total int64
+		h.DB.Model(&models.Post{}).Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Count(&total)
+
+		offset, _ := strconv.Atoi(offset)
+
+		newLimit := 3
+
+		if offset > int(total) {
+			newLimit = (int(total) - (offset))
+		}
+		fmt.Println(newLimit)
+
+		h.DB.Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Limit(newLimit).Offset(offset).Find(&tempPosts)
+		h.DB.Joins("JOIN posts on users.id = posts.user_id").Where("lower(text) like (?)", "%"+strings.ToLower(str)+"%").Order("post_id desc").Limit(newLimit).Offset(offset).Find(&userList)
+	}
 
 	type Temp struct {
 		PostID     int  `json:"post_id"`

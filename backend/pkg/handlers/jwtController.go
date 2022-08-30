@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -30,7 +29,6 @@ func GenerateJWT(email string) (string, error) {
 
 	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
-		fmt.Errorf("Something went Wrong: %s", err.Error())
 		return "", err
 	}
 
