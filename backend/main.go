@@ -43,6 +43,8 @@ func main() {
 	router.HandleFunc("/search-user", h.SearchUser).Methods(http.MethodGet)
 	router.HandleFunc("/user", h.GetCurrentUser).Methods(http.MethodGet)
 
+	router.HandleFunc("/user/recommend", h.UsersRecommendation).Methods(http.MethodGet)
+
 	// Validator
 	router.HandleFunc("/validate", h.ValidateActivated).Methods(http.MethodGet)
 
@@ -77,10 +79,8 @@ func main() {
 	router.HandleFunc("/experience", h.DeleteExperience).Methods(http.MethodDelete)
 
 	// Job
-	// router.HandleFunc("/job", h.AddJob).Methods(http.MethodPost)
-	// router.HandleFunc("/job", h.DeleteJob).Methods(http.MethodDelete)
-	// router.HandleFunc("/job", h.UpdateJob).Methods(http.MethodPatch)
-	// router.HandleFunc("/job", h.GetJob).Methods(http.MethodGet)
+	router.HandleFunc("/job", h.AddJob).Methods(http.MethodPost)
+	router.HandleFunc("/job", h.GetJob).Methods(http.MethodGet)
 
 	// Profile
 	router.HandleFunc("/profile", h.GetProfile).Methods(http.MethodGet)

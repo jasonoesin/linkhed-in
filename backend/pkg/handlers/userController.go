@@ -102,6 +102,33 @@ func (h handler) SearchUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userList)
 }
 
+func (h handler) UsersRecommendation(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	str := r.URL.Query().Get("email")
+	if str == "" {
+		json.NewEncoder(w).Encode("")
+		return
+	}
+
+	var tempUser models.User
+	h.DB.Where("email = ?", str).First(&tempUser)
+
+	if tempUser.Email == "" {
+		json.NewEncoder(w).Encode("")
+		return
+	}
+
+	var newTemp []uint
+
+	h.DB.Raw("select sub4.id from(select second as id from connections,(select second as id from connections where first = ? union select first from connections where second = ?) as sub where first in (sub.id) and second not in (sub.id) union select first from connections, (select second as id from connections where first = ? union select first from connections where second = ?) as sub where second in (sub.id) and first not in (sub.id)) sub4 where sub4.id != ?", tempUser.ID, tempUser.ID, tempUser.ID, tempUser.ID, tempUser.ID).Scan(&newTemp)
+
+	var users []models.User
+	h.DB.Where("id in (?)", newTemp).Find(&users)
+
+	json.NewEncoder(w).Encode(users)
+}
+
 type TempAct struct {
 	Link       string `json:"link"`
 	Name       string `json:"name"`

@@ -6,7 +6,6 @@ import { GetProfilePicture } from "./firebase/GetProfilePicture";
 
 export default function ConnectInvite(props: any) {
   const { ToastSuccess } = useToastContext();
-  console.log(props);
   return (
     <div className="connect">
       <div className="connect-pic">
