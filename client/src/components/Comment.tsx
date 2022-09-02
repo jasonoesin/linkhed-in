@@ -110,6 +110,8 @@ export default function Comment(props: any) {
               const newData = {
                 Comment: res.data,
                 User: user,
+                total_likes: 0,
+                liked: false,
               };
 
               setComment([newData, ...comment]);
