@@ -186,22 +186,35 @@
         }
 
         .profile_connect{
-            @include m.white-box;
             position: absolute;
             bottom: 1rem;
             right: 1rem;
-            padding: 0.5rem 1rem;
             cursor: pointer;
+            display: flex;
+            gap: 1rem;
+
+            *{
+            @include m.white-box;
+            padding: 0.5rem 1rem;
+            }
         }
 
         .profile_connected{
-            @include m.white-box;
-            background-color: gray;
             position: absolute;
             bottom: 1rem;
             right: 1rem;
-            padding: 0.5rem 1rem;
-            color: white;
+            display: flex;
+            gap: 1rem;
+
+            *{
+                @include m.white-box;
+                padding: 0.5rem 1rem;
+                }
+
+            .connected{
+                background-color: gray;
+                color: white;
+            }
         }
     }
 }

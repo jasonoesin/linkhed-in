@@ -151,7 +151,10 @@ export default function ProfilePage() {
             {user?.id !== current?.id && (
               <>
                 {connects?.includes(current?.id) ? (
-                  <div className={s.profile_connected}>Connected</div>
+                  <div className={s.profile_connected}>
+                    <ProfileMessage />
+                    <div className={s.connected}>Connected</div>
+                  </div>
                 ) : (
                   <div
                     onClick={() => {
@@ -169,7 +172,7 @@ export default function ProfilePage() {
                     }}
                     className={s.profile_connect}
                   >
-                    Connect
+                    <div className="">Connect</div>
                   </div>
                 )}
               </>
@@ -185,6 +188,10 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+const ProfileMessage = (props: any) => {
+  return <div className="profile-message">Message</div>;
+};
 
 const Analytics = (props: any) => {
   const [view, setView] = useState(0);

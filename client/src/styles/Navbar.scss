@@ -32,9 +32,21 @@
             background-color: #eef3f8 ;
             height: 2rem;
             width: 15rem;
-            padding: 5px;
+            padding: 0 2.5rem;
             box-sizing: border-box;
             border-radius: 3px;
+        }
+
+        .search{
+            position: relative;
+        }
+
+        .icon{
+            position: absolute;
+            width: 1.25rem;
+            left: 1rem;
+            top: -0.5rem;
+            color: gray;
         }
     }
 
