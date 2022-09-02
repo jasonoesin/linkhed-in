@@ -92,6 +92,8 @@ func main() {
 	// Comment
 	router.HandleFunc("/comment", h.AddComment).Methods(http.MethodPost)
 	router.HandleFunc("/comment", h.GetComment).Methods(http.MethodGet)
+	router.HandleFunc("/comment/like", h.LikeComment).Methods(http.MethodPost)
+	router.HandleFunc("/comment/unlike", h.UnlikeComment).Methods(http.MethodPost)
 
 	// Reply
 	router.HandleFunc("/reply", h.AddReply).Methods(http.MethodPost)

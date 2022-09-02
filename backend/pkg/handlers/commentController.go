@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -28,6 +29,7 @@ func (h handler) GetComment(w http.ResponseWriter, r *http.Request) {
 
 	post_id := r.URL.Query().Get("post_id")
 	offset := r.URL.Query().Get("offset")
+	getId := r.URL.Query().Get("user_id")
 
 	if post_id == "" {
 		json.NewEncoder(w).Encode("Error in reading payload")
@@ -35,8 +37,10 @@ func (h handler) GetComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Temp struct {
-		Comment models.Comment
-		User    models.User
+		Comment    models.Comment
+		User       models.User
+		TotalLikes int  `json:"total_likes"`
+		Liked      bool `json:"liked"`
 	}
 
 	var comments []models.Comment
@@ -63,11 +67,82 @@ func (h handler) GetComment(w http.ResponseWriter, r *http.Request) {
 	var temp []Temp
 
 	for i, _ := range comments {
+
+		liked := false
+
+		for _, curr := range comments[i].LikesRef {
+
+			fmt.Println(strconv.Itoa(int(curr)), getId)
+			if strconv.Itoa(int(curr)) == getId {
+				liked = true
+				break
+			}
+		}
+
 		temp = append(temp, Temp{
-			Comment: comments[i],
-			User:    users[i],
+			Comment:    comments[i],
+			User:       users[i],
+			TotalLikes: len(comments[i].LikesRef),
+			Liked:      liked,
 		})
 	}
 
 	json.NewEncoder(w).Encode(temp)
+}
+
+func (h handler) LikeComment(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	type Temp struct {
+		CommentId uint `gorm:"primaryKey;" json:"comment_id"`
+		UserId    uint `gorm:"primaryKey;" json:"user_id"`
+	}
+
+	var temp Temp
+
+	err := json.NewDecoder(r.Body).Decode(&temp)
+	if err != nil {
+		json.NewEncoder(w).Encode("Error in reading payload.")
+		return
+	}
+
+	var comment models.Comment
+	h.DB.Where("comment_id = ?", temp.CommentId).Find(&comment)
+
+	fmt.Println(temp.UserId)
+	comment.LikesRef = append(comment.LikesRef, int64(temp.UserId))
+
+	h.DB.Save(&comment)
+	json.NewEncoder(w).Encode(comment)
+}
+
+func (h handler) UnlikeComment(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	type Temp struct {
+		CommentId uint `gorm:"primaryKey;" json:"comment_id"`
+		UserId    uint `gorm:"primaryKey;" json:"user_id"`
+	}
+
+	var temp Temp
+
+	err := json.NewDecoder(r.Body).Decode(&temp)
+	if err != nil {
+		json.NewEncoder(w).Encode("Error in reading payload.")
+		return
+	}
+
+	var comment models.Comment
+	h.DB.Where("comment_id = ?", temp.CommentId).Find(&comment)
+
+	for i, id := range comment.LikesRef {
+		if id == int64(temp.UserId) {
+			comment.LikesRef[i] = comment.LikesRef[len(comment.LikesRef)-1]
+			comment.LikesRef = comment.LikesRef[:len(comment.LikesRef)-1]
+			break
+		}
+	}
+
+	h.DB.Save(&comment)
+	json.NewEncoder(w).Encode(comment)
 }

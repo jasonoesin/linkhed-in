@@ -15,7 +15,7 @@ export default function Comment(props: any) {
   useEffect(() => {
     axios
       .get(`http://localhost:8080/comment`, {
-        params: { post_id: props.data?.post_id },
+        params: { post_id: props.data?.post_id, user_id: user?.id },
       })
       .then((res) => {
         if (!res.data) {
@@ -30,6 +30,20 @@ export default function Comment(props: any) {
       });
   }, []);
 
+  const updateComment = (data: any) => {
+    setComment(
+      comment.filter((obj: any) => {
+        if (obj.Comment.CommentId === data.CommentId) {
+          obj.total_likes = obj.liked
+            ? obj.total_likes - 1
+            : obj.total_likes + 1;
+          obj.liked = !obj.liked;
+        }
+        return obj;
+      })
+    );
+  };
+
   const offsetRef = useRef<any>(3);
   const [next, setNext] = useState<any>(true);
   const [isFetching, setFetching] = useState<any>(false);
@@ -43,6 +57,7 @@ export default function Comment(props: any) {
         params: {
           post_id: props.data?.post_id,
           offset: offsetRef.current,
+          user_id: user?.id,
         },
       })
       .then((res) => {
@@ -110,7 +125,11 @@ export default function Comment(props: any) {
         <button className="comment-button">Post</button>
       </form>
 
-      <CommentRenderer comment={comment} data={props?.data} />
+      <CommentRenderer
+        updateComment={updateComment}
+        comment={comment}
+        data={props?.data}
+      />
       {next && (
         <button
           type="button"
@@ -140,9 +159,12 @@ const CommentRenderer = (props: any) => {
         props.comment.map((data: any, index: any) => {
           return (
             <CommentComponent
+              updateComment={props.updateComment}
               key={index}
               comment={data.Comment}
               user={data.User}
+              total_likes={data.total_likes}
+              liked={data.liked}
             />
           );
         })}
@@ -178,6 +200,20 @@ const CommentComponent = (props: any) => {
         setReplies(res.data);
       });
   }, []);
+
+  const updateReply = (data: any) => {
+    setReplies(
+      replies.filter((obj: any) => {
+        // if (obj.Reply.ReplyId === data.reply_id)
+        console.log(obj.Reply.ReplyId, data.reply_id);
+
+        obj.total_likes = obj.liked ? obj.total_likes - 1 : obj.total_likes + 1;
+        obj.liked = !obj.liked;
+
+        return obj;
+      })
+    );
+  };
 
   const offsetRef = useRef<any>(1);
   const [next, setNext] = useState<any>(true);
@@ -240,7 +276,42 @@ const CommentComponent = (props: any) => {
           </div>
           <div className="comment-bottom">
             <div className="bottom-left">
-              <div className="like">Like</div>
+              {!props.liked && (
+                <div
+                  onClick={() => {
+                    const json = {
+                      comment_id: props?.comment?.CommentId,
+                      user_id: user?.id,
+                    };
+                    axios
+                      .post(`http://localhost:8080/comment/like`, json)
+                      .then((res) => {
+                        props.updateComment(res.data);
+                      });
+                  }}
+                  className="like"
+                >
+                  Like
+                </div>
+              )}
+              {props.liked && (
+                <div
+                  onClick={() => {
+                    const json = {
+                      comment_id: props?.comment?.CommentId,
+                      user_id: user?.id,
+                    };
+                    axios
+                      .post(`http://localhost:8080/comment/unlike`, json)
+                      .then((res) => {
+                        props.updateComment(res.data);
+                      });
+                  }}
+                  className="like"
+                >
+                  Unlike
+                </div>
+              )}
               <div
                 onClick={() => {
                   setOnReply(!onReply);
@@ -251,7 +322,7 @@ const CommentComponent = (props: any) => {
               </div>
             </div>
             <div className="bottom-right">
-              <div className="total-like">0 Likes</div>
+              <div className="total-like">{props.total_likes} Likes</div>
               <div className="total-reply">0 Replies</div>
             </div>
           </div>
@@ -261,6 +332,7 @@ const CommentComponent = (props: any) => {
         replies.map((data: any, index: any) => {
           return (
             <Reply
+              updateReply={updateReply}
               current={user}
               setOnReply={setOnReply}
               key={index}
@@ -360,7 +432,7 @@ const Reply = (props: any) => {
                     axios
                       .post(`http://localhost:8080/reply/like`, json)
                       .then((res) => {
-                        console.log(res.data);
+                        props.updateReply(res.data);
                       });
                   }}
                   className="like"
@@ -379,7 +451,7 @@ const Reply = (props: any) => {
                     axios
                       .post(`http://localhost:8080/reply/unlike`, json)
                       .then((res) => {
-                        console.log(res.data);
+                        props.updateReply(res.data);
                       });
                   }}
                   className="like"
@@ -399,7 +471,6 @@ const Reply = (props: any) => {
             </div>
             <div className="bottom-right">
               <div className="total-like">{props?.data?.total_likes} Likes</div>
-              <div className="total-reply">0 Replies</div>
             </div>
           </div>
         </div>

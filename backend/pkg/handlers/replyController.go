@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -72,7 +71,6 @@ func (h handler) UnlikeReply(w http.ResponseWriter, r *http.Request) {
 
 	for i, u := range replyLike.UserId {
 		if u == int64(temp.UserId) {
-			fmt.Println("yes")
 			replyLike.UserId[i] = replyLike.UserId[len(replyLike.UserId)-1]
 			replyLike.UserId = replyLike.UserId[:len(replyLike.UserId)-1]
 			break
