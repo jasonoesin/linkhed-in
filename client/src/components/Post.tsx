@@ -7,6 +7,9 @@ import Comment from "./Comment";
 import { useAuthContext } from "./context/AuthContext";
 import { GetProfilePicture } from "./firebase/GetProfilePicture";
 import OnHoverUser from "./OnHoverUser";
+import parse from "html-react-parser";
+import linkifyHtml from "linkify-html";
+import * as linkify from "linkifyjs";
 
 export default function Post(props: any) {
   const { getUser } = useAuthContext();
@@ -14,6 +17,51 @@ export default function Post(props: any) {
 
   const [hovered, setHovered] = useState(false);
   const nav = useNavigate();
+
+  const richText = (str: any) => {
+    var split = str.split(" ");
+
+    split = split.map((d: any) => {
+      if (d.charAt(0) === "@") {
+        return `<a href ="./profile/${d.slice(
+          1,
+          d.length
+        )}" className="rich-text-at"> ${d} </a>`;
+      }
+
+      if (d.charAt(0) === "#") {
+        return `<a href ="./search/${d.slice(
+          1,
+          d.length
+        )}" className="rich-text-hash-tag"> ${d} </a>`;
+      }
+
+      return d;
+    });
+
+    split.join(" ");
+
+    const newStr = split.join(" ");
+
+    const options = {
+      attributes: null,
+      className: "rich-text-url",
+      defaultProtocol: "http",
+      events: null,
+      format: (value: any, type: any) => value,
+      formatHref: (href: any, type: any) => href,
+      ignoreTags: [],
+      nl2br: false,
+      rel: null,
+      tagName: "a",
+      target: null,
+      truncate: 0,
+      validate: true,
+    };
+
+    return linkifyHtml(newStr, options);
+  };
+
   return (
     <div className="post">
       {hovered && (
@@ -48,7 +96,9 @@ export default function Post(props: any) {
           <div className="post-up-right-name">{props.data?.User?.name}</div>
         </div>
       </div>
-      <div className="post-text">{props.data?.text}</div>
+      <div className="post-text">
+        {props.data?.text ? parse(richText(props.data?.text)) : null}
+      </div>
 
       {/* Example image */}
 

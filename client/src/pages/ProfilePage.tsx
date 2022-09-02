@@ -10,9 +10,12 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import storage from "../../firebase-config";
 import bg from "../assets/profile_bg.jpg";
 import { useConnectContext } from "../components/context/ConnectContext";
+import { PDFExport } from "@progress/kendo-react-pdf";
 
 export default function ProfilePage() {
   const [current, setCurrent] = useState<any>(false);
+  const [more, setMore] = useState<any>(false);
+
   const params = useParams();
 
   const { user } = useUserContext();
@@ -81,111 +84,148 @@ export default function ProfilePage() {
 
   const { connects } = useConnectContext();
 
+  const ref: any = React.createRef();
+
+  const downloadPdfDocument = () => {
+    if (ref.current) {
+      ref.current.save();
+    }
+  };
+
   return (
-    <div className="page">
-      <div className={s.page_container}>
-        <div
-          className={`${s.white_box} ${s.profile}`}
-          style={{
-            backgroundImage: `url(${
-              current?.background_url ? current?.background_url : bg
-            })`,
-          }}
-        >
-          {user?.id === current.id && (
-            <>
-              <PencilIcon
-                style={{
-                  position: "absolute",
-                  width: "2rem",
-                  color: "black",
-                  background: "white",
-                  borderRadius: "1rem",
-                  padding: "0.3rem",
-                  right: "1rem",
-                  top: "1rem",
-                  cursor: "pointer",
-                }}
-              />
-              <input
-                onChange={bgChange}
-                accept="image/*"
-                type="file"
-                style={{
-                  position: "absolute",
-                  width: "2rem",
-                  color: "black",
-                  background: "white",
-                  borderRadius: "1rem",
-                  padding: "0.3rem",
-                  right: "1rem",
-                  top: "1rem",
-                  cursor: "pointer",
-                  opacity: "0",
-                }}
-              />
-              <input
-                onChange={imageChange}
-                accept="image/*"
-                type="file"
-                className={s.profile_pic_input}
-              />
-            </>
-          )}
-
-          <GetProfilePicture
-            className={s.profile_image}
-            url={current?.profile_url}
-          />
-          <div className={s.profile_desc}>
-            <div className="">{current.name}</div>
-            <div
-              className=""
-              style={{
-                color: "gray",
-              }}
-            >
-              {current.occupation}
-            </div>
-
-            {user?.id !== current?.id && (
+    <PDFExport scale={0.6} paperSize="A4" margin="0.5cm" ref={ref}>
+      <div id="download" className="page">
+        <div className={s.page_container}>
+          <div
+            className={`${s.white_box} ${s.profile}`}
+            style={{
+              backgroundImage: `url(${
+                current?.background_url ? current?.background_url : bg
+              })`,
+            }}
+          >
+            {user?.id === current.id && (
               <>
-                {connects?.includes(current?.id) ? (
-                  <div className={s.profile_connected}>
-                    <ProfileMessage />
-                    <div className={s.connected}>Connected</div>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => {
-                      const json = {
-                        message: "Message Example",
-                        from: user?.email,
-                        target: current?.id,
-                      };
-
-                      axios
-                        .post(`http://localhost:8080/request-connect`, json)
-                        .then((res) => {
-                          console.log(res.data);
-                        });
-                    }}
-                    className={s.profile_connect}
-                  >
-                    <div className="">Connect</div>
-                  </div>
-                )}
+                <PencilIcon
+                  style={{
+                    position: "absolute",
+                    width: "2rem",
+                    color: "black",
+                    background: "white",
+                    borderRadius: "1rem",
+                    padding: "0.3rem",
+                    right: "1rem",
+                    top: "1rem",
+                    cursor: "pointer",
+                  }}
+                />
+                <input
+                  onChange={bgChange}
+                  accept="image/*"
+                  type="file"
+                  style={{
+                    position: "absolute",
+                    width: "2rem",
+                    color: "black",
+                    background: "white",
+                    borderRadius: "1rem",
+                    padding: "0.3rem",
+                    right: "1rem",
+                    top: "1rem",
+                    cursor: "pointer",
+                    opacity: "0",
+                  }}
+                />
+                <input
+                  onChange={imageChange}
+                  accept="image/*"
+                  type="file"
+                  className={s.profile_pic_input}
+                />
               </>
             )}
+
+            <GetProfilePicture
+              className={s.profile_image}
+              url={current?.profile_url}
+            />
+            <div className={s.profile_desc}>
+              <div className="">{current.name}</div>
+              <div
+                className=""
+                style={{
+                  color: "gray",
+                }}
+              >
+                {current.occupation}
+              </div>
+
+              {user?.id !== current?.id && (
+                <>
+                  {connects?.includes(current?.id) ? (
+                    <div className={s.profile_connected}>
+                      <ProfileMessage />
+                      <div className={s.connected}>Connected</div>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => {
+                        const json = {
+                          message: "Message Example",
+                          from: user?.email,
+                          target: current?.id,
+                        };
+
+                        axios
+                          .post(`http://localhost:8080/request-connect`, json)
+                          .then((res) => {
+                            console.log(res.data);
+                          });
+                      }}
+                      className={s.profile_connect}
+                    >
+                      <div className="">Connect</div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className={s.moreContainer}>
+              <div
+                onClick={() => {
+                  setMore(!more);
+                }}
+                className={s.more}
+              >
+                More
+              </div>
+
+              {more && (
+                <div className={s.morePop}>
+                  <div
+                    onClick={() => {
+                      setMore(false);
+                      downloadPdfDocument();
+                    }}
+                    className=""
+                  >
+                    Save profile as PDF
+                  </div>
+                  <div className="">Block</div>
+                  <div className="">Follow</div>
+                </div>
+              )}
+            </div>
           </div>
+
+          {user?.id === current.id && <Analytics data={current}></Analytics>}
+
+          <Experience user={user} data={current} />
+          <Education user={user} data={current} />
         </div>
-
-        {user?.id === current.id && <Analytics data={current}></Analytics>}
-
-        <Experience user={user} data={current} />
-        <Education user={user} data={current} />
       </div>
-    </div>
+    </PDFExport>
   );
 }
 
@@ -230,7 +270,7 @@ const ExpData = (props: any) => {
           />
         )}
 
-        <img src={binus} alt="" />
+        <img crossOrigin="anonymous" src={binus} alt="" />
         <div className={s.right}>
           <div className={s.school}>{data.title}</div>
           <div className={s.field}>{data.company}</div>
@@ -460,7 +500,7 @@ const EduData = (props: any) => {
           />
         )}
 
-        <img src={binus} alt="" />
+        <img crossOrigin="anonymous" src={binus} alt="" />
         <div className={s.right}>
           <div className={s.school}>{data.school}</div>
           <div className={s.field}>{data.field}</div>

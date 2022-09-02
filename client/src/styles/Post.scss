@@ -154,4 +154,37 @@
             }
         }
     }
+
+    .post-text{
+    }
+    
+    .rich-text-at{
+        display: inline-block;
+        background-color: palevioletred;
+        color: white;
+        padding: 1.5px 3px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .rich-text-hash-tag{
+        display: inline-block;
+        background-color: burlywood;
+        color: white;
+        padding: 1.5px 3px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .rich-text-url{
+        color: rgb(103, 195, 225);
+        font-style: italic;
+        cursor: pointer;
+
+        &:hover{
+            color: rgb(69, 182, 219);
+        }
+    }
 }
