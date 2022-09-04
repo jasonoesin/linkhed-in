@@ -1,12 +1,19 @@
 import { PhotographIcon, VideoCameraIcon, XIcon } from "@heroicons/react/solid";
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/CreatePostPop.scss";
 import { useAuthContext } from "./context/AuthContext";
 import storage from "../../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useUserContext } from "./context/UserContext";
 import { GetProfilePicture } from "./firebase/GetProfilePicture";
+import linkifyHtml from "linkify-html";
+import * as linkify from "linkifyjs";
+import parse from "html-react-parser";
+import { MentionsInput, Mention } from "react-mentions";
+import { useToast } from "react-toastify";
+import { useToastContext } from "./context/ToastContext";
+import { useConnectContext } from "./context/ConnectContext";
 
 export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
   const [selectedImage, setSelectedImage] = useState<any | null>();
@@ -39,7 +46,52 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
     setSelectedVideo(null);
   };
 
-  const area = useRef<any>();
+  const tags = useRef<any>();
+
+  const filterText = (str: any) => {
+    var split = str.split(" ");
+
+    tags.current = [];
+
+    split = split.map((d: any) => {
+      if (d.includes("@") && d.includes("[") && d.includes("]")) {
+        return "@" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
+      }
+
+      if (d.includes("#") && d.includes("[") && d.includes("]")) {
+        tags.current.push(d.slice(d.indexOf("[") + 1, d.indexOf("]")));
+        return "#" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
+      }
+
+      return d;
+    });
+
+    var newStr = split.join(" ");
+
+    return newStr;
+  };
+
+  const [mention, setMention] = useState("");
+
+  const { ToastError } = useToastContext();
+
+  const [connected, setConnected] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/connection/rich`, {
+        params: { email: user?.email },
+      })
+      .then((res) => {
+        const data = res.data.map((user: any) => {
+          return {
+            id: user.nick,
+            display: user.nick,
+          };
+        });
+        setConnected(data);
+      });
+  }, [user]);
 
   return (
     <div className="pop">
@@ -55,7 +107,51 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
           </div>
           <div className="name">{user?.name}</div>
         </div>
-        <textarea ref={area} placeholder="What do you want to talk about?" />
+        <MentionsInput
+          placeholder="What's on your mind ?"
+          style={{
+            suggestions: {
+              list: {
+                backgroundColor: "white",
+                border: "1px solid rgba(0,0,0,0.15)",
+                fontSize: 14,
+              },
+              item: {
+                padding: "5px 15px",
+                borderBottom: "1px solid rgba(0,0,0,0.15)",
+                "&focused": {
+                  backgroundColor: "#cee4e5",
+                },
+              },
+            },
+          }}
+          forceSuggestionsAboveCursor={true}
+          className="mention-input"
+          value={mention}
+          onChange={(e) => {
+            filterText(e.target.value);
+            setMention(e.target.value);
+          }}
+        >
+          <Mention
+            appendSpaceOnAdd={true}
+            style={{
+              backgroundColor: "#DB7093",
+            }}
+            markup={"@[__id__]"}
+            trigger="@"
+            data={connected}
+          />
+          <Mention
+            appendSpaceOnAdd={true}
+            style={{
+              backgroundColor: "#DEB887",
+            }}
+            markup={"#[__id__]"}
+            trigger="#"
+            data={connected}
+          />
+        </MentionsInput>
         {selectedImage && (
           <div className="preview">
             <img src={URL.createObjectURL(selectedImage)} alt="Image" />
@@ -83,11 +179,15 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
 
         <button
           onClick={() => {
-            if (area.current.value === "") return;
+            if (mention === "") {
+              ToastError("You must at enter a text content!");
+              return;
+            }
 
             var json = {
-              text: area.current.value,
+              text: filterText(mention),
               email: getUser().email,
+              tags: tags.current,
             };
 
             axios.post(`http://localhost:8080/post`, json).then((res) => {
@@ -105,8 +205,9 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
                   getDownloadURL(s.ref).then((downloadURL) => {
                     var json = {
                       post_id: res.data.post_id,
-                      text: area.current.value,
+                      text: filterText(mention),
                       email: getUser().email,
+                      tags: tags.current,
                       asset: downloadURL,
                       asset_type: selectedImage ? "image" : "video",
                     };

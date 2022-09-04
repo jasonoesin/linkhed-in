@@ -34,6 +34,7 @@ func main() {
 	router.HandleFunc("/post/unlike", h.UnlikePost).Methods(http.MethodPost)
 
 	router.HandleFunc("/post/search", h.SearchPost).Methods(http.MethodGet)
+	router.HandleFunc("/post/search/tag", h.SearchPostTags).Methods(http.MethodGet)
 
 	// Connect-Request
 	router.HandleFunc("/request-connect", h.AddConnectRequest).Methods(http.MethodPost)
@@ -54,6 +55,8 @@ func main() {
 
 	// Connection
 	router.HandleFunc("/connection", h.GetAllConnected).Methods(http.MethodGet)
+	router.HandleFunc("/connection/rich", h.GetAllConnectedRichTect).Methods(http.MethodGet)
+
 	router.HandleFunc("/accept-connection", h.AcceptConnection).Methods(http.MethodPost)
 	router.HandleFunc("/decline-connection", h.DeclineConnection).Methods(http.MethodPost)
 

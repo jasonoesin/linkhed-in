@@ -23,14 +23,14 @@ export default function Post(props: any) {
 
     split = split.map((d: any) => {
       if (d.charAt(0) === "@") {
-        return `<a href ="./profile/${d.slice(
+        return `<a href ="/profile/${d.slice(
           1,
           d.length
         )}" className="rich-text-at"> ${d} </a>`;
       }
 
       if (d.charAt(0) === "#") {
-        return `<a href ="./search/${d.slice(
+        return `<a href ="/search/tag/${d.slice(
           1,
           d.length
         )}" className="rich-text-hash-tag"> ${d} </a>`;

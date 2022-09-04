@@ -22,6 +22,7 @@ import ConnectProvider from "./components/context/ConnectContext";
 import Footer from "./components/Footer";
 import Job from "./pages/Job";
 import Notification from "./pages/Notification";
+import SearchTag from "./pages/SearchTag";
 
 const Protected = () => {
   return (
@@ -82,6 +83,8 @@ function App() {
                       <Route path="/notification" element={<Notification />} />
 
                       <Route path="/search/:query" element={<Search />} />
+                      <Route path="/search/tag/:tag" element={<SearchTag />} />
+
                       <Route path="/profile/:id" element={<ProfilePage />} />
                     </Route>
                   </Route>

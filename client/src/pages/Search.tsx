@@ -153,8 +153,8 @@ const SearchPost = (props: any) => {
           </div>
         }
       >
-        {posts.map((data: any) => {
-          return <Post refetchData={refetchData} key={data.text} data={data} />;
+        {posts.map((data: any, index: any) => {
+          return <Post refetchData={refetchData} key={index} data={data} />;
         })}
       </InfiniteScroll>
     </div>

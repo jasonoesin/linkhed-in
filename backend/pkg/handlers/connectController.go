@@ -261,3 +261,23 @@ func (h handler) AcceptConnection(w http.ResponseWriter, r *http.Request) {
 // 	h.DB.Create(&con)
 // 	json.NewEncoder(w).Encode(con)
 // }
+
+func (h handler) GetAllConnectedRichTect(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	str := r.URL.Query().Get("email")
+	if str == "" {
+		json.NewEncoder(w).Encode("Error in reading payload")
+		return
+	}
+
+	tempUser, _ := h.UserFromEmail(str)
+
+	var firstCon []models.User
+	h.DB.Joins("join connections on users.id = connections.second").Where("connections.first = ?", tempUser.ID).Find(&firstCon)
+
+	var secondCon []models.User
+	h.DB.Joins("join connections on users.id = connections.first").Where("connections.second = ?", tempUser.ID).Find(&secondCon)
+
+	json.NewEncoder(w).Encode(append(firstCon, secondCon...))
+}
