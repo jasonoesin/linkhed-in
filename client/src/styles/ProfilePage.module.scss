@@ -260,3 +260,27 @@
         }
     }
 }
+
+.dark{
+    color: white;
+    .white_box{
+        background-color: #1d2226;
+    }
+
+    .empty{
+        background-color: rgb(82, 82, 82);
+    }
+
+    .more, .profile_desc, .morePop{
+        background-color: #1d2226 !important;
+        color: white;
+    }
+
+    .profile_connected{
+        *{
+            background-color: #1d2226 !important;
+            color: white;
+        }
+    }
+    
+}

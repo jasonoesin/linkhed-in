@@ -11,6 +11,7 @@ import storage from "../../firebase-config";
 import bg from "../assets/profile_bg.jpg";
 import { useConnectContext } from "../components/context/ConnectContext";
 import { PDFExport } from "@progress/kendo-react-pdf";
+import { useThemeContext } from "../components/context/ThemeContext";
 
 export default function ProfilePage() {
   const [current, setCurrent] = useState<any>(false);
@@ -92,10 +93,14 @@ export default function ProfilePage() {
     }
   };
 
+  const { theme } = useThemeContext();
+
   return (
     <PDFExport scale={0.6} paperSize="A4" margin="0.5cm" ref={pdfref}>
-      <div id="download" className="page">
-        <div className={s.page_container}>
+      <div id="download" className={"page"}>
+        <div
+          className={`${s.page_container} ${theme === "dark" ? s.dark : null}`}
+        >
           <div
             className={`${s.white_box} ${s.profile}`}
             style={{

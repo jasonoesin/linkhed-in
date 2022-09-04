@@ -160,7 +160,7 @@
     
     .rich-text-at{
         display: inline-block;
-        background-color: palevioletred;
+        background-color: palevioletred !important;;
         color: white;
         padding: 1.5px 3px;
         border-radius: 10px;
@@ -170,7 +170,7 @@
 
     .rich-text-hash-tag{
         display: inline-block;
-        background-color: burlywood;
+        background-color: burlywood !important;
         color: white;
         padding: 1.5px 3px;
         border-radius: 10px;

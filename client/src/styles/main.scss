@@ -1,3 +1,5 @@
+
+
 * {
     margin: 0;
     box-sizing: border-box;
@@ -15,12 +17,78 @@
         height: fit-content;
         position: relative;
         font-size: 0.95rem;
+
+        
     }
 
     a{
         all: unset;
     }
-}   
+}  
 
+.dark{
+
+    color: white;
+    .page, .home{
+        background-color: black;
+    }
+    .create-post .doc, .search-filter, .search-page-white-box{
+        background-color: #1d2226;
+        *{
+            background-color: #1d2226;
+        }
+    }
+
+    .navbar{
+        background-color: #1d2226;
+
+        *{
+            color: rgb(200, 200, 200);
+        }
+
+        input{
+            color: black;
+        }
+
+        .profile-bar{
+            background-color: #1d2226;
+        }
+    }
+
+    .page-container{
+        > * {
+            background-color: #1d2226;
+        }
+    }
+
+    .job{
+        background-color: #1d2226;
+        .job-white-box{
+            background-color: #1d2226;
+        }
+    }
+
+    .comment-content{
+        background-color: lightgray !important;
+        *{
+            background-color: lightgray !important;
+        }
+    }
+
+    .search{
+        path{
+            background-color: white !important;
+        }
+    }
+
+    textarea{
+        background-color: rgb(200, 200, 200) !important;
+    }
+
+    .post{
+        background-color: #1d2226;
+    }
+    
+}
 
 

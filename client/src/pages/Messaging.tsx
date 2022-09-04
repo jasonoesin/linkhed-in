@@ -20,6 +20,7 @@ import styles from "../styles/Messaging.module.scss";
 import Select from "react-select";
 import { useUserContext } from "../components/context/UserContext";
 import { GetProfilePicture } from "../components/firebase/GetProfilePicture";
+import { useThemeContext } from "../components/context/ThemeContext";
 
 export default function Messaging() {
   const [current, setCurrent] = useState<any>(null);
@@ -65,9 +66,11 @@ export default function Messaging() {
           });
   };
 
+  const { theme } = useThemeContext();
+
   return (
     <div className="page">
-      <div className={styles.box}>
+      <div className={`${styles.box} ${theme === "dark" ? styles.dark : null}`}>
         <div className={styles.box_left}>
           <div className="">Messaging</div>
           <hr />
@@ -115,6 +118,8 @@ const ChatArea = (props: any) => {
   }, [props.current]);
 
   const textRef = useRef<any>();
+
+  console.log(props.current);
 
   return (
     <>

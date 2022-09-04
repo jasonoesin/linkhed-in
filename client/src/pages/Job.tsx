@@ -46,6 +46,43 @@ export default function Job() {
               />
             );
           })}
+
+        {modal && (
+          <div className="job-modal">
+            <form
+              onSubmit={(e: any) => {
+                e.preventDefault();
+                const json = {
+                  user: user?.id,
+                  name: e.target.Name.value,
+                  company: e.target.Company.value,
+                  location: e.target.Location.value,
+                };
+
+                axios.post(`http://localhost:8080/job`, json).then((res) => {
+                  setModal(false);
+                  fetch();
+                });
+              }}
+              className="job-white-box"
+            >
+              <XIcon
+                className="icon"
+                onClick={() => {
+                  setModal(false);
+                }}
+              />
+              <div className="title">Add Job</div>
+              <label htmlFor="">Job Title</label>
+              <input id="Name" type="text" />
+              <label htmlFor="">Company</label>
+              <input id="Company" type="text" />
+              <label htmlFor="">Location</label>
+              <input id="Location" type="text" />
+              <button>Add</button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -63,43 +100,6 @@ const JobComponent = (props: any) => {
           <div className="location">{props.data?.location}</div>
         </div>
       </div>
-
-      {props.modal.modal && (
-        <div className="job-modal">
-          <form
-            onSubmit={(e: any) => {
-              e.preventDefault();
-              const json = {
-                user: props.modal.user?.id,
-                name: e.target.Name.value,
-                company: e.target.Company.value,
-                location: e.target.Location.value,
-              };
-
-              axios.post(`http://localhost:8080/job`, json).then((res) => {
-                props.modal.setModal(false);
-                props.fetch();
-              });
-            }}
-            className="job-white-box"
-          >
-            <XIcon
-              className="icon"
-              onClick={() => {
-                props.modal.setModal(false);
-              }}
-            />
-            <div className="title">Add Job</div>
-            <label htmlFor="">Job Title</label>
-            <input id="Name" type="text" />
-            <label htmlFor="">Company</label>
-            <input id="Company" type="text" />
-            <label htmlFor="">Location</label>
-            <input id="Location" type="text" />
-            <button>Add</button>
-          </form>
-        </div>
-      )}
     </>
   );
 };

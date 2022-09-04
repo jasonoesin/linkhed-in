@@ -23,6 +23,7 @@ import Footer from "./components/Footer";
 import Job from "./pages/Job";
 import Notification from "./pages/Notification";
 import SearchTag from "./pages/SearchTag";
+import ThemeProvider from "./components/context/ThemeContext";
 
 const Protected = () => {
   return (
@@ -59,7 +60,7 @@ const NavLayout = () => {
 
 function App() {
   return (
-    <div className="app">
+    <ThemeProvider>
       <AuthProvider>
         <ToastContext>
           <UserProvider>
@@ -95,7 +96,7 @@ function App() {
           </UserProvider>
         </ToastContext>
       </AuthProvider>
-    </div>
+    </ThemeProvider>
   );
 }
 

@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/solid";
 import { useUserContext } from "./context/UserContext";
 import { GetProfilePicture } from "./firebase/GetProfilePicture";
+import { useThemeContext } from "./context/ThemeContext";
 
 const Profile = () => {
   const [pop, setPop] = useState(false);
@@ -32,6 +33,8 @@ const Profile = () => {
       document.removeEventListener("mousedown", handler);
     };
   });
+
+  const { theme, changeTheme } = useThemeContext();
 
   return (
     <>
@@ -58,6 +61,26 @@ const Profile = () => {
             >
               My Profile
             </div>
+
+            {theme === "light" ? (
+              <div
+                onClick={() => {
+                  changeTheme();
+                }}
+              >
+                {" "}
+                Change to Dark Mode
+              </div>
+            ) : (
+              <div
+                onClick={() => {
+                  changeTheme();
+                }}
+              >
+                {" "}
+                Change to Light Mode
+              </div>
+            )}
             <div
               onClick={() => {
                 localStorage.removeItem("data");
