@@ -2,9 +2,11 @@ import React from "react";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
 import { useNavigate } from "react-router-dom";
+import { useToastContext } from "../components/context/ToastContext";
 
 const Register = () => {
   const nav = useNavigate();
+  const { ToastSuccess, ToastError } = useToastContext();
 
   return (
     <div>
@@ -36,11 +38,14 @@ const Register = () => {
               email: (e.target as HTMLFormElement).email.value,
               password: (e.target as HTMLFormElement).password.value,
             };
+            ToastSuccess("Validating Email and Password ...");
 
             axios.post(`http://localhost:8080/register`, user).then((res) => {
               if (res.data?.id !== 0) {
                 nav("/");
+                return;
               }
+              ToastError("An error occured");
             });
           }}
           className="white-box"

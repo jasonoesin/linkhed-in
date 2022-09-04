@@ -63,6 +63,11 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
         return "#" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
       }
 
+      if (d.includes("#")) {
+        tags.current.push(d.slice(1, d.length));
+        return "#" + d.slice(1, d.length);
+      }
+
       return d;
     });
 
@@ -76,6 +81,7 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
   const { ToastError } = useToastContext();
 
   const [connected, setConnected] = useState([]);
+  const [tagSuggestions, setTags] = useState([]);
 
   useEffect(() => {
     axios
@@ -90,6 +96,26 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
           };
         });
         setConnected(data);
+      });
+
+    axios
+      .get(`http://localhost:8080/tags`, {
+        params: {},
+      })
+      .then((res) => {
+        if (res.data === null) {
+          setTags([]);
+          return;
+        }
+
+        const data = res.data.map((d: any) => {
+          return {
+            id: d,
+            display: d,
+          };
+        });
+
+        setTags(data);
       });
   }, [user]);
 
@@ -149,7 +175,7 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
             }}
             markup={"#[__id__]"}
             trigger="#"
-            data={connected}
+            data={tagSuggestions}
           />
         </MentionsInput>
         {selectedImage && (
@@ -189,6 +215,8 @@ export default function CreatePostPop({ handleCloseIcon, refetchData }: any) {
               email: getUser().email,
               tags: tags.current,
             };
+
+            console.log(tags.current);
 
             axios.post(`http://localhost:8080/post`, json).then((res) => {
               if (selectedImage || selectedVideo) {

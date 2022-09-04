@@ -175,7 +175,9 @@ const Chat = (props: any) => {
         <div className={styles.image}>
           <GetProfilePicture url={props?.profile_url} />
         </div>
-        <div className={styles.name}>{props.data.text}</div>
+        <div style={{ backgroundColor: "#d4eda8" }} className={styles.name}>
+          {props.data.text}
+        </div>
       </div>
     );
   }

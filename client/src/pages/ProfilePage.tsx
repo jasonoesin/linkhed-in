@@ -84,16 +84,16 @@ export default function ProfilePage() {
 
   const { connects } = useConnectContext();
 
-  const ref: any = React.createRef();
+  const pdfref: any = React.createRef();
 
   const downloadPdfDocument = () => {
-    if (ref.current) {
-      ref.current.save();
+    if (pdfref.current) {
+      pdfref.current.save();
     }
   };
 
   return (
-    <PDFExport scale={0.6} paperSize="A4" margin="0.5cm" ref={ref}>
+    <PDFExport scale={0.6} paperSize="A4" margin="0.5cm" ref={pdfref}>
       <div id="download" className="page">
         <div className={s.page_container}>
           <div

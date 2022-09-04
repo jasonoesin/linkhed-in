@@ -1,9 +1,12 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useToastContext } from "../components/context/ToastContext";
 import "../styles/login.scss";
 
 const Login = () => {
   const nav = useNavigate();
+  const { ToastError } = useToastContext();
+
   return (
     <div>
       <div className="header">
@@ -43,7 +46,10 @@ const Login = () => {
                 localStorage.setItem("data", JSON.stringify(res.data));
                 window.location.reload();
                 nav("/home");
+                return;
               }
+
+              ToastError(res.data);
             });
           }}
           className="white-box"

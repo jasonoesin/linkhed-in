@@ -105,6 +105,10 @@ func main() {
 	router.HandleFunc("/reply/unlike", h.UnlikeReply).Methods(http.MethodPost)
 	// router.HandleFunc("/reply/like", h.GetReply).Methods(http.MethodGet)
 
+	// Tags
+
+	router.HandleFunc("/tags", h.GetAllTags).Methods(http.MethodGet)
+
 	log.Println("API is running!")
 	http.ListenAndServe(":8080", GORILLA_HANDLERS.CORS(GORILLA_HANDLERS.AllowedHeaders([]string{"X-Requested-With", "Access-Control-Allow-Origin", "Content-Type", "Authorization"}), GORILLA_HANDLERS.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"}), GORILLA_HANDLERS.AllowedOrigins([]string{"*"}))(router))
 }

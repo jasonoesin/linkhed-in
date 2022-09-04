@@ -1,5 +1,13 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  createRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { InfinitySpin } from "react-loader-spinner";
 import "../styles/Comment.scss";
 import { useToastContext } from "./context/ToastContext";
@@ -13,6 +21,11 @@ export default function Comment(props: any) {
   const [comment, setComment] = useState<any>([]);
 
   useEffect(() => {
+    refetch();
+  }, []);
+
+  const refetch = () => {
+    console.log("Fetching");
     axios
       .get(`http://localhost:8080/comment`, {
         params: { post_id: props.data?.post_id, user_id: user?.id },
@@ -28,7 +41,7 @@ export default function Comment(props: any) {
         }
         setComment(res.data);
       });
-  }, []);
+  };
 
   const updateComment = (data: any) => {
     setComment(
@@ -114,7 +127,8 @@ export default function Comment(props: any) {
                 liked: false,
               };
 
-              setComment([newData, ...comment]);
+              const newComments = [newData, ...comment];
+              setComment(newComments);
             });
           }
         }}
@@ -154,7 +168,7 @@ export default function Comment(props: any) {
   );
 }
 
-const CommentRenderer = (props: any) => {
+const CommentRenderer = forwardRef((props: any, ref) => {
   return (
     <>
       {props.comment &&
@@ -172,9 +186,9 @@ const CommentRenderer = (props: any) => {
         })}
     </>
   );
-};
+});
 
-const CommentComponent = (props: any) => {
+const CommentComponent = forwardRef((props: any, ref) => {
   const [onReply, setOnReply] = useState<any>();
   const { user } = useUserContext();
   const { ToastError } = useToastContext();
@@ -182,6 +196,12 @@ const CommentComponent = (props: any) => {
   const [replies, setReplies] = useState<any>([]);
 
   useEffect(() => {
+    refetchReplies();
+  }, []);
+
+  const refetchReplies = () => {
+    offsetRef.current = 1;
+
     axios
       .get(`http://localhost:8080/reply`, {
         params: { comment_id: props.comment?.CommentId, user_id: user?.id },
@@ -201,15 +221,15 @@ const CommentComponent = (props: any) => {
 
         setReplies(res.data);
       });
-  }, []);
+  };
 
   const updateReply = (data: any) => {
     setReplies(
       replies.filter((obj: any) => {
-        // if (obj.Reply.ReplyId === data.reply_id)
-        console.log(obj.Reply.ReplyId, data.reply_id);
-
-        obj.total_likes = obj.liked ? obj.total_likes - 1 : obj.total_likes + 1;
+        if (obj.Reply.ReplyId === data.reply_id)
+          obj.total_likes = obj.liked
+            ? obj.total_likes - 1
+            : obj.total_likes + 1;
         obj.liked = !obj.liked;
 
         return obj;
@@ -378,8 +398,6 @@ const CommentComponent = (props: any) => {
               };
 
               axios.post(`http://localhost:8080/reply`, json).then((res) => {
-                console.log(res.data);
-
                 offsetRef.current += 1;
                 const newData = {
                   Reply: res.data,
@@ -401,7 +419,7 @@ const CommentComponent = (props: any) => {
       )}
     </>
   );
-};
+});
 
 const Reply = (props: any) => {
   const reply = props.data?.Reply;
