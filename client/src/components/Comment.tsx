@@ -13,6 +13,53 @@ import "../styles/Comment.scss";
 import { useToastContext } from "./context/ToastContext";
 import { useUserContext } from "./context/UserContext";
 import { GetProfilePicture } from "./firebase/GetProfilePicture";
+import linkifyHtml from "linkify-html";
+import parse from "html-react-parser";
+import { Mention, MentionsInput } from "react-mentions";
+
+const richText = (str: any) => {
+  var split = str.split(" ");
+
+  split = split.map((d: any) => {
+    if (d.charAt(0) === "@") {
+      return `<a href ="/profile/${d.slice(
+        1,
+        d.length
+      )}" className="rich-text-at"> ${d} </a>`;
+    }
+
+    if (d.charAt(0) === "#") {
+      return `<a href ="/search/tag/${d.slice(
+        1,
+        d.length
+      )}" className="rich-text-hash-tag"> ${d} </a>`;
+    }
+
+    return d;
+  });
+
+  split.join(" ");
+
+  const newStr = split.join(" ");
+
+  const options = {
+    attributes: null,
+    className: "rich-text-url",
+    defaultProtocol: "http",
+    events: null,
+    format: (value: any, type: any) => value,
+    formatHref: (href: any, type: any) => href,
+    ignoreTags: [],
+    nl2br: false,
+    rel: null,
+    tagName: "a",
+    target: null,
+    truncate: 0,
+    validate: true,
+  };
+
+  return linkifyHtml(newStr, options);
+};
 
 export default function Comment(props: any) {
   const { user } = useUserContext();
@@ -102,12 +149,83 @@ export default function Comment(props: any) {
       });
   };
 
+  const [mention, setMention] = useState("");
+
+  const [connected, setConnected] = useState([]);
+  const [tagSuggestions, setTags] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/connection/rich`, {
+        params: { email: user?.email },
+      })
+      .then((res) => {
+        const data = res.data.map((user: any) => {
+          return {
+            id: user.nick,
+            display: user.nick,
+          };
+        });
+        setConnected(data);
+      });
+
+    axios
+      .get(`http://localhost:8080/tags`, {
+        params: {},
+      })
+      .then((res) => {
+        if (res.data === null) {
+          setTags([]);
+          return;
+        }
+
+        const data = res.data.map((d: any) => {
+          return {
+            id: d,
+            display: d,
+          };
+        });
+
+        setTags(data);
+      });
+  }, [user]);
+
+  const tags = useRef<any>();
+
+  const filterText = (str: any) => {
+    var split = str.split(" ");
+
+    tags.current = [];
+
+    split = split.map((d: any) => {
+      if (d.includes("@") && d.includes("[") && d.includes("]")) {
+        return "@" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
+      }
+
+      if (d.includes("#") && d.includes("[") && d.includes("]")) {
+        tags.current.push(d.slice(d.indexOf("[") + 1, d.indexOf("]")));
+        return "#" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
+      }
+
+      if (d.includes("#")) {
+        tags.current.push(d.slice(1, d.length));
+        return "#" + d.slice(1, d.length);
+      }
+
+      return d;
+    });
+
+    var newStr = split.join(" ");
+
+    return newStr;
+  };
+
   return (
     <div className="comment">
       <form
         onSubmit={(e: any) => {
           e.preventDefault();
-          const text = e.target.text.value;
+          const text = filterText(mention);
 
           if (text === "") {
             ToastError("Comment must have a text content to be posted.");
@@ -136,12 +254,60 @@ export default function Comment(props: any) {
         <hr />
         <div className="start-comment">
           <GetProfilePicture url={user?.profile_url} />
-          <textarea id="text" />
+          <MentionsInput
+            placeholder="What's on your mind ?"
+            style={{
+              margin: "0",
+              fontSize: "13px",
+              width: "24rem",
+              suggestions: {
+                list: {
+                  backgroundColor: "white",
+                  border: "1px solid rgba(0,0,0,0.15)",
+                  fontSize: 14,
+                },
+                item: {
+                  padding: "5px 15px",
+                  borderBottom: "1px solid rgba(0,0,0,0.15)",
+                  "&focused": {
+                    backgroundColor: "#cee4e5",
+                  },
+                },
+              },
+            }}
+            forceSuggestionsAboveCursor={true}
+            className="mention-input"
+            value={mention}
+            onChange={(e) => {
+              console.log(filterText(e.target.value));
+              setMention(e.target.value);
+            }}
+          >
+            <Mention
+              appendSpaceOnAdd={true}
+              style={{
+                backgroundColor: "#DB7093",
+              }}
+              markup={"@[__id__]"}
+              trigger="@"
+              data={connected}
+            />
+            <Mention
+              appendSpaceOnAdd={true}
+              style={{
+                backgroundColor: "#DEB887",
+              }}
+              markup={"#[__id__]"}
+              trigger="#"
+              data={tagSuggestions}
+            />
+          </MentionsInput>
         </div>
         <button className="comment-button">Post</button>
       </form>
 
       <CommentRenderer
+        suggestions={{ connected, tagSuggestions }}
         updateComment={updateComment}
         comment={comment}
         data={props?.data}
@@ -175,6 +341,7 @@ const CommentRenderer = forwardRef((props: any, ref) => {
         props.comment.map((data: any, index: any) => {
           return (
             <CommentComponent
+              suggestions={props.suggestions}
               updateComment={props.updateComment}
               key={index}
               comment={data.Comment}
@@ -282,6 +449,38 @@ const CommentComponent = forwardRef((props: any, ref) => {
       });
   };
 
+  const [mention, setMention] = useState("");
+
+  const tags = useRef<any>();
+
+  const filterText = (str: any) => {
+    var split = str.split(" ");
+
+    tags.current = [];
+
+    split = split.map((d: any) => {
+      if (d.includes("@") && d.includes("[") && d.includes("]")) {
+        return "@" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
+      }
+
+      if (d.includes("#") && d.includes("[") && d.includes("]")) {
+        tags.current.push(d.slice(d.indexOf("[") + 1, d.indexOf("]")));
+        return "#" + d.slice(d.indexOf("[") + 1, d.indexOf("]"));
+      }
+
+      if (d.includes("#")) {
+        tags.current.push(d.slice(1, d.length));
+        return "#" + d.slice(1, d.length);
+      }
+
+      return d;
+    });
+
+    var newStr = split.join(" ");
+
+    return newStr;
+  };
+
   return (
     <>
       <div className="comment-component">
@@ -294,7 +493,8 @@ const CommentComponent = forwardRef((props: any, ref) => {
           <div className="comment-content">
             <div className="name">{props?.user?.name}</div>
             <div className="occupation">{props?.user?.occupation}</div>
-            {props?.comment?.content}
+            {props?.comment?.content &&
+              parse(richText(props?.comment?.content))}
           </div>
           <div className="comment-bottom">
             <div className="bottom-left">
@@ -386,7 +586,7 @@ const CommentComponent = forwardRef((props: any, ref) => {
           action=""
           onSubmit={(e: any) => {
             e.preventDefault();
-            const text = e.target.text.value;
+            const text = filterText(mention);
 
             if (text === "") {
               ToastError("Comment must have a text content to be posted.");
@@ -402,6 +602,8 @@ const CommentComponent = forwardRef((props: any, ref) => {
                 const newData = {
                   Reply: res.data,
                   User: user,
+                  likes: false,
+                  total_likes: 0,
                 };
                 setReplies([...replies, newData]);
               });
@@ -411,7 +613,57 @@ const CommentComponent = forwardRef((props: any, ref) => {
         >
           <div className="top">
             <GetProfilePicture url={user?.profile_url} />
-            <textarea id="text" />
+
+            <MentionsInput
+              placeholder="What's on your mind ?"
+              style={{
+                margin: "0",
+                fontSize: "13px",
+                width: "24rem",
+                suggestions: {
+                  list: {
+                    backgroundColor: "white",
+                    border: "1px solid rgba(0,0,0,0.15)",
+                    fontSize: 14,
+                  },
+                  item: {
+                    padding: "5px 15px",
+                    borderBottom: "1px solid rgba(0,0,0,0.15)",
+                    "&focused": {
+                      backgroundColor: "#cee4e5",
+                    },
+                  },
+                },
+              }}
+              forceSuggestionsAboveCursor={true}
+              className="mention-input"
+              value={mention}
+              onChange={(e) => {
+                console.log(filterText(e.target.value));
+                setMention(e.target.value);
+              }}
+            >
+              <Mention
+                appendSpaceOnAdd={true}
+                style={{
+                  backgroundColor: "#DB7093",
+                }}
+                markup={"@[__id__]"}
+                trigger="@"
+                data={props.suggestions?.connected}
+              />
+              <Mention
+                appendSpaceOnAdd={true}
+                style={{
+                  backgroundColor: "#DEB887",
+                }}
+                markup={"#[__id__]"}
+                trigger="#"
+                data={props.suggestions?.tagSuggestions}
+              />
+            </MentionsInput>
+
+            {/* <textarea id="text" /> */}
           </div>
 
           <button className="comment-button">Reply</button>
@@ -425,6 +677,8 @@ const Reply = (props: any) => {
   const reply = props.data?.Reply;
   const user = props.data?.User;
 
+  console.log(props);
+
   return (
     <div className="reply">
       <div className="comment-component">
@@ -437,7 +691,7 @@ const Reply = (props: any) => {
           <div className="comment-content">
             <div className="name">{user?.name}</div>
             <div className="occupation">{user?.occupation}</div>
-            {reply?.content}
+            {reply?.content && parse(richText(reply?.content))}
           </div>
           <div className="comment-bottom">
             <div className="bottom-left">
