@@ -21,6 +21,24 @@ func (h handler) AddComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.DB.Create(&temp)
+
+	//---
+	for _, tag := range temp.Tags {
+		var tagDb models.Tags
+		h.DB.Where("tag = ?", tag).Find(&tagDb)
+
+		if tagDb.Id == 0 {
+			tagDb.Tag = tag
+			tagDb.PostId = append(tagDb.PostId, int64(temp.PostId))
+			h.DB.Create(&tagDb)
+			continue
+		} else {
+			tagDb.PostId = append(tagDb.PostId, int64(temp.PostId))
+			h.DB.Save(&tagDb)
+		}
+
+	}
+	//---
 	json.NewEncoder(w).Encode(temp)
 }
 

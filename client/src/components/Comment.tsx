@@ -234,7 +234,10 @@ export default function Comment(props: any) {
               user_id: user?.id,
               post_id: props.data?.post_id,
               content: text,
+              tags: tags.current,
             };
+
+            console.log(json);
 
             axios.post(`http://localhost:8080/comment`, json).then((res) => {
               offsetRef.current += 1;
@@ -307,6 +310,7 @@ export default function Comment(props: any) {
       </form>
 
       <CommentRenderer
+        post_id={props.data?.post_id}
         suggestions={{ connected, tagSuggestions }}
         updateComment={updateComment}
         comment={comment}
@@ -341,6 +345,7 @@ const CommentRenderer = forwardRef((props: any, ref) => {
         props.comment.map((data: any, index: any) => {
           return (
             <CommentComponent
+              post_id={props?.post_id}
               suggestions={props.suggestions}
               updateComment={props.updateComment}
               key={index}
@@ -433,8 +438,6 @@ const CommentComponent = forwardRef((props: any, ref) => {
 
             return;
           }
-
-          console.log(res.data);
 
           setReplies([
             ...replies,
@@ -554,6 +557,7 @@ const CommentComponent = forwardRef((props: any, ref) => {
         replies.map((data: any, index: any) => {
           return (
             <Reply
+              post_id={props?.post_id}
               updateReply={updateReply}
               current={user}
               setOnReply={setOnReply}
@@ -595,6 +599,8 @@ const CommentComponent = forwardRef((props: any, ref) => {
                 user_id: user?.id,
                 comment_id: props.comment?.CommentId,
                 content: text,
+                post_id: props?.post_id,
+                tags: tags.current,
               };
 
               axios.post(`http://localhost:8080/reply`, json).then((res) => {
@@ -676,8 +682,6 @@ const CommentComponent = forwardRef((props: any, ref) => {
 const Reply = (props: any) => {
   const reply = props.data?.Reply;
   const user = props.data?.User;
-
-  console.log(props);
 
   return (
     <div className="reply">

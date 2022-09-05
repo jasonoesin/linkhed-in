@@ -3,13 +3,14 @@ package models
 import "github.com/lib/pq"
 
 type Comment struct {
-	CommentId uint          `gorm:"primaryKey;"`
-	PostId    uint          `json:"post_id"`
-	Post      Post          `gorm:"references:post_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
-	UserId    uint          `json:"user_id"`
-	User      User          `gorm:"foreignKey:user_id;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
-	Content   string        `json:"content"`
-	LikesRef  pq.Int64Array `json:"likes_ref" gorm:"type:integer[]"`
+	CommentId uint           `gorm:"primaryKey;"`
+	PostId    uint           `json:"post_id"`
+	Post      Post           `gorm:"references:post_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
+	UserId    uint           `json:"user_id"`
+	User      User           `gorm:"foreignKey:user_id;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
+	Content   string         `json:"content"`
+	LikesRef  pq.Int64Array  `json:"likes_ref" gorm:"type:integer[]"`
+	Tags      pq.StringArray `json:"tags" gorm:"type:text[]"`
 }
 
 type Reply struct {
