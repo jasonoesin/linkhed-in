@@ -237,8 +237,6 @@ export default function Comment(props: any) {
               tags: tags.current,
             };
 
-            console.log(json);
-
             axios.post(`http://localhost:8080/comment`, json).then((res) => {
               offsetRef.current += 1;
               const newData = {

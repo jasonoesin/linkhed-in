@@ -1,15 +1,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useActivatedContext } from "../components/context/Activated";
 import { useAuthContext } from "../components/context/AuthContext";
 
 export default function NotActivated() {
   const { activated } = useActivatedContext();
+  const nav = useNavigate();
 
   if (activated) {
+    nav("../");
     window.location.reload();
-    return <Navigate to={"/"} />;
+
+    return <></>;
   }
 
   if (!activated)
