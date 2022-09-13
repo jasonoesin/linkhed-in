@@ -59,7 +59,14 @@ const Login = () => {
 
           <input id="email" placeholder="Email" type="text" />
           <input id="password" placeholder="Password" type="password" />
-          <div className="text-2">Forgot Password?</div>
+          <div
+            onClick={() => {
+              nav("../forgot-password");
+            }}
+            className="text-2"
+          >
+            Forgot Password?
+          </div>
           <button>Sign In</button>
         </form>
 
